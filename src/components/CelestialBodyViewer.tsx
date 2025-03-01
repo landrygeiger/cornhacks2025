@@ -73,7 +73,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
         const radBeta = THREE.MathUtils.degToRad(beta);
         const radGamma = THREE.MathUtils.degToRad(gamma);
 
-        const euler = new THREE.Euler(radAlpha, radBeta, radGamma, "YXZ");
+        const euler = new THREE.Euler(radBeta, radGamma, radAlpha, "YXZ");
         const quaternion = new THREE.Quaternion();
         quaternion.setFromEuler(euler);
         camera.setRotationFromQuaternion(quaternion);
