@@ -69,7 +69,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
     const handleMotion = (event: DeviceOrientationEvent) => {
       const { alpha, beta, gamma } = event;
       if (alpha !== null && beta !== null && gamma !== null) {
-        const radAlpha = THREE.MathUtils.degToRad(alpha);
+        const radAlpha = THREE.MathUtils.degToRad(alpha + 90);
         const radBeta = THREE.MathUtils.degToRad(beta - 90);
         const radGamma = THREE.MathUtils.degToRad(gamma);
 
