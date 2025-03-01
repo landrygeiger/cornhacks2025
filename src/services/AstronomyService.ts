@@ -21,14 +21,21 @@ function buildAstronomyAPIUrl(location: Location, fromDate: string = getCurrentD
         elevation: location.elevation.toString(),
         from_date: fromDate,
         to_date: toDate,
-        time: encodeURIComponent(time),
+        time: time,
     });
     return `${baseUrl}?${params.toString()}`;
 }
 
-function getCurrentTime() {
+function getCurrentTime(): string {
     const now = new Date();
-    return now.toISOString().split("T")[1].split(".")[0]; // Extracts HH:MM:SS
+
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+
+    const currentTime = `${hours}:${minutes}:${seconds}`;
+    console.log(currentTime);
+    return currentTime; // Extracts HH:MM:SS in local time
 }
 
 function getCurrentDate() {
@@ -57,6 +64,8 @@ export const getAllGeoSpacialData = async (location:Location = defaultLocation) 
         }
     })
     .then(response => response.json()) // Convert response to JSON
-    .then(data => console.log(data))  // Log the data
+    .then(data => {
+        console.log(data);
+        return data })  // Log the data
     .catch(error => console.error("Error:", error)); // Handle errors
 }
