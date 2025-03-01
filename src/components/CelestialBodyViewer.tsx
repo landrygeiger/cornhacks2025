@@ -29,8 +29,9 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
     vy: -1,
     a: -1,
     g: -1,
-    times: 0,
   });
+
+  const [times, setTimes] = useState(0);
 
   useEffect(() => {
     const canvas = canvasRef.current as HTMLCanvasElement;
@@ -45,6 +46,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
     };
 
     const handleMotion = (event: DeviceOrientationEvent) => {
+      setTimes((time) => time + 1);
       const { beta, gamma } = event;
       if (!gamma || !beta) {
         setDebug({ ...debug, a: -2, g: -2 });
@@ -57,7 +59,6 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         vy: velocityRef.current.y,
         a: beta,
         g: gamma,
-        times: debug.times + 1,
       });
       velocityRef.current.x += gamma * 0.05;
       velocityRef.current.y += beta * 0.05;
@@ -94,6 +95,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         height: height ? `${height}rem` : "100%",
       }}
     >
+      <p>{times}</p>
       <p>{JSON.stringify(debug)}</p>
       <Camera facingMode={facingMode} />
       <canvas
