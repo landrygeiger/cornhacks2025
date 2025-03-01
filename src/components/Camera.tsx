@@ -20,10 +20,13 @@ const getUserVideoStream = async (
 };
 
 type Props = {
+  width: "full" | number;
+  height: "full" | number;
   facingMode?: string;
+  className?: string;
 };
 
-const Camera: FC<Props> = ({ facingMode }) => {
+const Camera: FC<Props> = ({ width, height, facingMode, className }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [error, setError] = useState("");
 
@@ -42,7 +45,7 @@ const Camera: FC<Props> = ({ facingMode }) => {
   }, [initializeCamera]);
 
   return (
-    <div>
+    <div className={`relative w-${width} h-${height} ${className}`}>
       {error ? (
         <p>{error}</p>
       ) : (
@@ -50,9 +53,8 @@ const Camera: FC<Props> = ({ facingMode }) => {
           ref={videoRef}
           autoPlay
           playsInline
-          style={{
-            width: "100%",
-          }}
+          // className="w-full"
+          className="absolute top-0 left-0 w-full h-full object-cover"
         />
       )}
     </div>
