@@ -79,10 +79,9 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
 
     if (
       typeof DeviceMotionEvent !== "undefined" &&
-      "requestPermission" in DeviceOrientationEvent &&
-      typeof DeviceOrientationEvent.requestPermission === "function"
+      typeof (DeviceOrientationEvent as any).requestPermission === "function"
     ) {
-      DeviceOrientationEvent.requestPermission().then(() => {
+      (DeviceOrientationEvent as any).requestPermission().then(() => {
         window.addEventListener("deviceorientation", handleMotion);
       });
     }
