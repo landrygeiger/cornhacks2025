@@ -3,6 +3,7 @@
   "private": false,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://landrygeiger.github.io/cornhacks2025/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
