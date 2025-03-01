@@ -1,7 +1,6 @@
 import { FC, useState } from "react";
 import * as THREE from "three";
 import { CelestialBody } from "../types/celestial-body";
-import Camera from "./Camera";
 
 type Props = {
   /**
