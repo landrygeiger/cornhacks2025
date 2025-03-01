@@ -47,8 +47,15 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
 
     // Create a sphere
     const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
+    const materials = [
+      new THREE.MeshBasicMaterial({ color: 0xff0000 }), // X+ (red)
+      new THREE.MeshBasicMaterial({ color: 0xff00 }), // Y+ (green)
+      new THREE.MeshBasicMaterial({ color: 0x0000ff }), // Z+ (blue)
+      new THREE.MeshBasicMaterial({ color: 0xff0000 }), // X- (red)
+      new THREE.MeshBasicMaterial({ color: 0xff00 }), // Y- (green)
+      new THREE.MeshBasicMaterial({ color: 0x0000ff }), // Z- (blue)
+    ];
+    const cube = new THREE.Mesh(geometry, materials);
     scene.add(cube);
 
     // Camera position
@@ -63,7 +70,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
       const { alpha, beta, gamma } = event;
       if (alpha !== null && beta !== null && gamma !== null) {
         const radAlpha = THREE.MathUtils.degToRad(alpha);
-        const radBeta = THREE.MathUtils.degToRad(beta);
+        const radBeta = THREE.MathUtils.degToRad(beta - 90);
         const radGamma = THREE.MathUtils.degToRad(gamma);
 
         setAgb({ b: beta, g: gamma, a: alpha });
