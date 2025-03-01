@@ -30,6 +30,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
     a: -1,
     g: -1,
   });
+  const [error, setError] = useState("");
 
   const [times, setTimes] = useState(0);
 
@@ -81,9 +82,12 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
       typeof DeviceMotionEvent !== "undefined" &&
       typeof (DeviceOrientationEvent as any).requestPermission === "function"
     ) {
-      (DeviceOrientationEvent as any).requestPermission().then(() => {
-        window.addEventListener("deviceorientation", handleMotion);
-      });
+      (DeviceOrientationEvent as any)
+        .requestPermission()
+        .then(() => {
+          window.addEventListener("deviceorientation", handleMotion);
+        })
+        .catch((e: any) => setError(e.toString()));
     }
 
     canvas.width = window.innerWidth;
@@ -102,6 +106,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         height: height ? `${height}rem` : "100%",
       }}
     >
+      <p>{error} lol</p>
       <p>{times}</p>
       <p>{JSON.stringify(debug)}</p>
       <Camera facingMode={facingMode} />
