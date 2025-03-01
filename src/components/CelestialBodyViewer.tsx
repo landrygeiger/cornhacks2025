@@ -34,7 +34,13 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
 
   const [times, setTimes] = useState(0);
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   return () => {
+  //     window.removeEventListener("deviceorientation";
+  //   };
+  // }, []);
+
+  const handleClick = () => {
     const canvas = canvasRef.current as HTMLCanvasElement;
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
@@ -93,11 +99,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     updateCanvas();
-
-    return () => {
-      window.removeEventListener("deviceorientation", handleMotion);
-    };
-  }, []);
+  };
 
   return (
     <div
@@ -106,6 +108,9 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         height: height ? `${height}rem` : "100%",
       }}
     >
+      <button onClick={handleClick} className="">
+        Click me
+      </button>
       <p>{error} lol</p>
       <p>{times}</p>
       <p>{JSON.stringify(debug)}</p>
