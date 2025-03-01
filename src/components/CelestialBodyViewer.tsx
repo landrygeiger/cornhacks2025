@@ -50,6 +50,15 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         setDebug({ ...debug, a: -2, g: -2 });
         return;
       }
+      setDebug({
+        px: positionRef.current.x,
+        py: positionRef.current.y,
+        vx: velocityRef.current.x,
+        vy: velocityRef.current.y,
+        a: beta,
+        g: gamma,
+        times: debug.times + 1,
+      });
       velocityRef.current.x += gamma * 0.05;
       velocityRef.current.y += beta * 0.05;
       positionRef.current.x += velocityRef.current.x;
@@ -63,16 +72,6 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         0,
         Math.min(window.innerHeight, positionRef.current.y)
       );
-
-      setDebug({
-        px: positionRef.current.x,
-        py: positionRef.current.y,
-        vx: velocityRef.current.x,
-        vy: velocityRef.current.y,
-        a: beta,
-        g: gamma,
-        times: debug.times + 1,
-      });
 
       updateCanvas();
     };
