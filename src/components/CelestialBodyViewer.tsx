@@ -62,6 +62,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
     camera.position.z = 10;
 
     function animate() {
+      camera.rotation.z += 0.01;
       renderer.render(scene, camera);
     }
     renderer.setAnimationLoop(animate);
@@ -71,7 +72,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
       if (alpha !== null && beta !== null && gamma !== null) {
         const radAlpha = THREE.MathUtils.degToRad(alpha);
         const radBeta = THREE.MathUtils.degToRad(beta - 90);
-        const radGamma = THREE.MathUtils.degToRad(gamma);
+        const radGamma = THREE.MathUtils.degToRad(-gamma);
 
         setAgb({ b: beta, g: gamma, a: alpha });
 
