@@ -101,6 +101,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
         height: height ? `${height}rem` : "100%",
       }}
     >
+      <p id="egg">yoyoyo</p>
       <button onClick={handleClick} className="">
         Click me
       </button>

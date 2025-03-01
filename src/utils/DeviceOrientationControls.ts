@@ -103,7 +103,7 @@ export const DeviceOrientationControls = function (object) {
     var orient = scope.screenOrientation
       ? THREE.Math.degToRad(scope.screenOrientation)
       : 0; // O
-
+    document.getElementById("egg").textContent = alpha.toString();
     setObjectQuaternion(scope.object.quaternion, alpha, beta, gamma, orient);
     this.alpha = alpha;
   };
