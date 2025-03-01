@@ -93,7 +93,9 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
       <button onClick={handleClick} className="">
         Click me
       </button>
-      <p>{JSON.stringify(agb)}</p>
+      <p>{`b: ${agb.b.toFixed(2)}, g: ${agb.g.toFixed(2)}, a: ${agb.a.toFixed(
+        2
+      )}`}</p>
       {/* <canvas
         ref={canvasRef}
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
