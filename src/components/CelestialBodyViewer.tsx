@@ -29,6 +29,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
     vy: -1,
     a: -1,
     g: -1,
+    times: 0,
   });
 
   useEffect(() => {
@@ -70,6 +71,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         vy: velocityRef.current.y,
         a: beta,
         g: gamma,
+        times: debug.times + 1,
       });
 
       updateCanvas();
