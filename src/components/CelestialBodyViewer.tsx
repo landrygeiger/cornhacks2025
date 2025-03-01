@@ -67,11 +67,24 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         a: beta,
         g: gamma,
       });
-      velocityRef.current.x += gamma * 0.05;
-      velocityRef.current.y += beta * 0.05;
+      const radBeta = (beta * Math.PI) / 180;
+      const radGamma = (gamma * Math.PI) / 180;
+
+      // Compute position changes based on tilt
+      const deltaX = Math.sin(radGamma) * 5; // Left/right tilt
+      const deltaY = Math.sin(radBeta) * 5; // Forward/backward tilt
+
+      // Apply decay factor for smoother motion
+      velocityRef.current.x *= 0.9;
+      velocityRef.current.y *= 0.9;
+
+      velocityRef.current.x += deltaX;
+      velocityRef.current.y += deltaY;
+
       positionRef.current.x += velocityRef.current.x;
       positionRef.current.y += velocityRef.current.y;
 
+      // Clamp to screen bounds
       positionRef.current.x = Math.max(
         0,
         Math.min(window.innerWidth, positionRef.current.x)
