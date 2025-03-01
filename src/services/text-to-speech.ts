@@ -1,7 +1,10 @@
 import OpenAI from "openai";
 
 export const textToSpeech = async (inputText: string): Promise<Blob> => {
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const openai = new OpenAI({
+    apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true,
+  });
 
   const audio = await openai.audio.speech.create({
     model: "tts-1",

@@ -1,7 +1,10 @@
 import OpenAI from "openai";
 
 export const chat = async (userText: string): Promise<string> => {
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const openai = new OpenAI({
+    apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true,
+  });
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     store: true,

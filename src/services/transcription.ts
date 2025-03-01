@@ -1,9 +1,12 @@
 import OpenAI from "openai";
 
 export const transcribe = async (userSpeech: Blob): Promise<string> => {
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const openai = new OpenAI({
+    apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true,
+  });
 
-  const speech = blobToFile(userSpeech, "speech.wav", "audio/wav");
+  const speech = new File([userSpeech], "speech.wav", { type: "audio/wav" });
 
   const transcription = await openai.audio.transcriptions.create({
     file: speech,
@@ -13,8 +16,4 @@ export const transcribe = async (userSpeech: Blob): Promise<string> => {
   const content = transcription.text ? transcription.text : "Error";
 
   return content;
-};
-
-const blobToFile = (data: Blob, fileName: string, mimeType: string) => {
-  return new File([data], fileName, { type: mimeType });
 };
