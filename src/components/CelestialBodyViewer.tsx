@@ -70,13 +70,15 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
       const { alpha, beta, gamma } = event;
       if (alpha !== null && beta !== null && gamma !== null) {
         const radAlpha = THREE.MathUtils.degToRad(alpha);
-        const radBeta = THREE.MathUtils.degToRad(beta - 90);
-        const radGamma = THREE.MathUtils.degToRad(-gamma);
+        const radBeta = THREE.MathUtils.degToRad(beta);
+        const radGamma = THREE.MathUtils.degToRad(gamma);
+
+        const euler = new THREE.Euler(radAlpha, radBeta, radGamma, "YXZ");
+        const quaternion = new THREE.Quaternion();
+        quaternion.setFromEuler(euler);
+        camera.setRotationFromQuaternion(quaternion);
 
         setAgb({ b: beta, g: gamma, a: alpha });
-
-        // Simple rotation based on device orientation
-        camera.rotation.set(radBeta, radAlpha, radGamma);
       }
     };
 
