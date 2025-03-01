@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import Camera from "./Camera";
 import { CelestialBody } from "../types/celestial-body";
 
@@ -22,6 +22,12 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
     y: window.innerHeight / 2,
   });
   const velocityRef = useRef({ x: 0, y: 0 });
+  const [debug, setDebug] = useState({
+    px: -1,
+    py: -1,
+    vx: -1,
+    vy: -1,
+  });
 
   useEffect(() => {
     const canvas = canvasRef.current as HTMLCanvasElement;
@@ -54,6 +60,13 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         Math.min(window.innerHeight, positionRef.current.y)
       );
 
+      setDebug({
+        px: positionRef.current.x,
+        py: positionRef.current.y,
+        vx: velocityRef.current.x,
+        vy: velocityRef.current.y,
+      });
+
       updateCanvas();
     };
 
@@ -75,8 +88,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         height: height ? `${height}rem` : "100%",
       }}
     >
-      <p>{JSON.stringify(positionRef.current)}</p>
-      <p>{JSON.stringify(velocityRef.current)}</p>
+      <p>{JSON.stringify(debug)}</p>
       <Camera facingMode={facingMode} />
       <canvas
         ref={canvasRef}
