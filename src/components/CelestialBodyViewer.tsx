@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import * as THREE from "three";
 import { CelestialBody } from "../types/celestial-body";
 import Camera from "./Camera";
@@ -23,6 +23,12 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
   //   };
   // }, []);
 
+  const [agb, setAgb] = useState({
+    b: 0,
+    g: 0,
+    a: 0,
+  });
+
   const handleClick = () => {
     // Scene setup
     const scene = new THREE.Scene();
@@ -35,6 +41,8 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.domElement.style.position = "absolute";
+    renderer.domElement.style.top = "5rem";
     document.body.appendChild(renderer.domElement);
 
     // Create a sphere
@@ -57,6 +65,8 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         const radAlpha = THREE.MathUtils.degToRad(alpha);
         const radBeta = THREE.MathUtils.degToRad(beta);
         const radGamma = THREE.MathUtils.degToRad(gamma);
+
+        setAgb({ b: beta, g: gamma, a: alpha });
 
         // Simple rotation based on device orientation
         camera.rotation.set(radBeta, radGamma, radAlpha);
@@ -83,7 +93,8 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
       <button onClick={handleClick} className="">
         Click me
       </button>
-      <Camera facingMode={facingMode} />
+      <p>{JSON.stringify(agb)}</p>
+      {/* <Camera facingMode={facingMode} /> */}
       {/* <canvas
         ref={canvasRef}
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
