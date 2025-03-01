@@ -53,7 +53,6 @@ const Camera: FC<Props> = ({ width, height, facingMode, className }) => {
           ref={videoRef}
           autoPlay
           playsInline
-          // className="w-full"
           className="absolute top-0 left-0 w-full h-full object-cover"
         />
       )}
