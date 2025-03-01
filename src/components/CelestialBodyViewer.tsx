@@ -1,6 +1,7 @@
-import { FC, useRef, useState } from "react";
-import Camera from "./Camera";
+import { FC } from "react";
+import * as THREE from "three";
 import { CelestialBody } from "../types/celestial-body";
+import Camera from "./Camera";
 
 type Props = {
   /**
@@ -16,24 +17,6 @@ type Props = {
 };
 
 const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const positionRef = useRef({
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
-  });
-  const velocityRef = useRef({ x: 0, y: 0 });
-  const [debug, setDebug] = useState({
-    px: -1,
-    py: -1,
-    vx: -1,
-    vy: -1,
-    a: -1,
-    g: -1,
-  });
-  const [error, setError] = useState("");
-
-  const [times, setTimes] = useState(0);
-
   // useEffect(() => {
   //   return () => {
   //     window.removeEventListener("deviceorientation";
@@ -41,77 +24,53 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
   // }, []);
 
   const handleClick = () => {
-    const canvas = canvasRef.current as HTMLCanvasElement;
-    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
 
-    const updateCanvas = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.beginPath();
-      ctx.arc(positionRef.current.x, positionRef.current.y, 10, 0, Math.PI * 2);
-      ctx.fillStyle = "red";
-      ctx.fill();
-    };
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Create a sphere
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    // Camera position
+    camera.position.z = 10;
+
+    function animate() {
+      renderer.render(scene, camera);
+    }
+    renderer.setAnimationLoop(animate);
 
     const handleMotion = (event: DeviceOrientationEvent) => {
-      setTimes((time) => time + 1);
-      const { beta, gamma } = event;
-      if (!gamma || !beta) {
-        setDebug({ ...debug, a: -2, g: -2 });
-        return;
+      const { alpha, beta, gamma } = event;
+      if (alpha !== null && beta !== null && gamma !== null) {
+        const radAlpha = THREE.MathUtils.degToRad(alpha);
+        const radBeta = THREE.MathUtils.degToRad(beta);
+        const radGamma = THREE.MathUtils.degToRad(gamma);
+
+        // Simple rotation based on device orientation
+        camera.rotation.set(radBeta, radAlpha, radGamma);
       }
-      setDebug({
-        px: positionRef.current.x,
-        py: positionRef.current.y,
-        vx: velocityRef.current.x,
-        vy: velocityRef.current.y,
-        a: beta,
-        g: gamma,
-      });
-      const radBeta = (beta * Math.PI) / 180;
-      const radGamma = (gamma * Math.PI) / 180;
-
-      // Compute position changes based on tilt
-      const deltaX = Math.sin(radGamma) * 5; // Left/right tilt
-      const deltaY = Math.sin(radBeta) * 5; // Forward/backward tilt
-
-      // Apply decay factor for smoother motion
-      velocityRef.current.x *= 0.9;
-      velocityRef.current.y *= 0.9;
-
-      velocityRef.current.x += deltaX;
-      velocityRef.current.y += deltaY;
-
-      positionRef.current.x += velocityRef.current.x;
-      positionRef.current.y += velocityRef.current.y;
-
-      // Clamp to screen bounds
-      positionRef.current.x = Math.max(
-        0,
-        Math.min(window.innerWidth, positionRef.current.x)
-      );
-      positionRef.current.y = Math.max(
-        0,
-        Math.min(window.innerHeight, positionRef.current.y)
-      );
-
-      updateCanvas();
     };
 
     if (
       typeof DeviceMotionEvent !== "undefined" &&
       typeof (DeviceOrientationEvent as any).requestPermission === "function"
     ) {
-      (DeviceOrientationEvent as any)
-        .requestPermission()
-        .then(() => {
-          window.addEventListener("deviceorientation", handleMotion);
-        })
-        .catch((e: any) => setError(e.toString()));
+      (DeviceOrientationEvent as any).requestPermission().then(() => {
+        window.addEventListener("deviceorientation", handleMotion);
+      });
     }
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    updateCanvas();
   };
 
   return (
@@ -124,14 +83,11 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
       <button onClick={handleClick} className="">
         Click me
       </button>
-      <p>{error} lol</p>
-      <p>{times}</p>
-      <p>{JSON.stringify(debug)}</p>
       <Camera facingMode={facingMode} />
-      <canvas
+      {/* <canvas
         ref={canvasRef}
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
-      />
+      /> */}
     </div>
   );
 };
