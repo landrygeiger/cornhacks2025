@@ -1,7 +1,8 @@
 import { FC } from "react";
+import Camera from "./Camera";
 
 const App: FC = () => {
-  return <h1>Hello World!</h1>;
+  return <Camera />;
 };
 
 export default App;
