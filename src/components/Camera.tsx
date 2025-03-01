@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect, useRef, useState } from "react";
+import AudioBar from "./AudioBar";
 
 const getUserVideoStream = async (
   facingMode: string,
@@ -68,6 +69,7 @@ const Camera: FC<Props> = ({ width, height, facingMode, className }) => {
           className="absolute top-0 left-0 w-full h-full object-cover"
         />
       )}
+      <AudioBar />
     </div>
   );
 };

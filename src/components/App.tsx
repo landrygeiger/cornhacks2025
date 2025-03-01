@@ -1,8 +1,8 @@
 import { FC } from "react";
-import AudioBar from "./AudioBar";
+import Camera from "./Camera";
 
 const App: FC = () => {
-  return <AudioBar />;
+  return <Camera />;
 };
 
 export default App;

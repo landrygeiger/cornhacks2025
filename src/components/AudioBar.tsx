@@ -1,4 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
+import { transcribe } from "../services/transcription";
+import { chat } from "../services/text-to-text";
+import { textToSpeech } from "../services/text-to-speech";
 
 const onClick = async (
   isRecording: boolean, 
@@ -6,7 +9,7 @@ const onClick = async (
   setAudioStream: React.Dispatch<React.SetStateAction<MediaStream | null>>, 
   setError: React.Dispatch<React.SetStateAction<string>>,
   mediaRecorderRef: React.RefObject<MediaRecorder | null>,
-  setPrompt: React.Dispatch<React.SetStateAction<string>>
+  setPrompt: React.Dispatch<React.SetStateAction<Blob>>
 ) => {
 
   const recording = !isRecording;
@@ -25,7 +28,7 @@ const beginRecording = async (
   setAudioStream: React.Dispatch<React.SetStateAction<MediaStream | null>>,
   setError: React.Dispatch<React.SetStateAction<string>>,
   mediaRecorderRef: React.RefObject<MediaRecorder | null>,
-  setPrompt: React.Dispatch<React.SetStateAction<string>>
+  setPrompt: React.Dispatch<React.SetStateAction<Blob>>
 ) => {
   // turn on audio stream
   const stream = await getUserAudioStream(setError);
@@ -41,13 +44,21 @@ const beginRecording = async (
       chunks.push(event.data);
     };
 
-    mediaRecorder.onstop = () => {
+    mediaRecorder.onstop = async () => {
       const audioBlob = new Blob(chunks, { type: 'audio/wav' });
-      console.log('Audio Blob:', audioBlob);
+      console.time();
+      console.log("Speech To Text");
+      const prompt = await transcribe(audioBlob);
+      console.log("LLM");
+      const textResp = await chat(prompt);
+      console.log("Text to Speech");
+      const speechResp = await textToSpeech(textResp);
+      console.timeEnd();
+      setPrompt(speechResp);
+
 
     };
 
-    setPrompt("");
     mediaRecorder.start();
   }
 };
@@ -81,11 +92,28 @@ const getUserAudioStream = async (
   }
 };
 
+const playAudioFromBlob = (blob: Blob) => {
+  const url = URL.createObjectURL(blob);
+  const audio = new Audio(url);
+  audio.play();
+
+  audio.onended = () => {
+    URL.revokeObjectURL(url);
+  };
+
+  audio.onerror = () => {
+    console.error("Error playing the audio");
+    URL.revokeObjectURL(url);
+  };
+};
+
+
 const AudioBar: FC = () => {
   const [isRecording, setIsRecording] = useState(false)
   const [error, setError] = useState("");
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
-  const [prompt, setPrompt] = useState("");
+  const [speechResponse, setSpeechResponse] = useState<Blob>(new Blob);
+  const isMounted = useRef(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
@@ -97,20 +125,32 @@ const AudioBar: FC = () => {
     };
   }, [audioStream]);
 
+  useEffect(() => {
+    if (isMounted.current) {
+      playAudioFromBlob(speechResponse);
+    } else {
+      isMounted.current = true;
+    }
+  }, [speechResponse]);
+
+
   return (
-    <div>
+    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
       <button onClick={() => onClick(
         isRecording, 
         setIsRecording,
         setAudioStream, 
         setError,
         mediaRecorderRef,
-        setPrompt
-      )} className="">
-        {isRecording ? "Stop Recording" : "Start Recording"}
+        setSpeechResponse
+      )} className={`px-6 py-3 rounded-xl font-medium text-white transition-all duration-300 shadow-md ${
+        isRecording
+          ? "bg-[#A32222] hover:bg-[#8C1C1C] shadow-[#6E1616]"
+          : "bg-[#C43D3D] hover:bg-[#A83232] shadow-[#872727]"
+      }`}>
+        {isRecording ? "Stop" : "Record"}
       </button>
       {error && <p>{error}</p>}
-      <p>{prompt}</p>
     </div>
   );
 };
