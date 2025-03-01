@@ -68,6 +68,8 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         py: positionRef.current.y,
         vx: velocityRef.current.x,
         vy: velocityRef.current.y,
+        a: beta,
+        g: gamma,
       });
 
       updateCanvas();
