@@ -59,7 +59,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         const radGamma = THREE.MathUtils.degToRad(gamma);
 
         // Simple rotation based on device orientation
-        camera.rotation.set(radBeta, radAlpha, radGamma);
+        camera.rotation.set(radBeta, radGamma, radAlpha);
       }
     };
 
