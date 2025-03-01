@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
 import * as THREE from "three";
 import { CelestialBody } from "../types/celestial-body";
+import { DeviceOrientationControls } from "../utils/DeviceOrientationControls";
 // import Camera from "./Camera";
 
 type Props = {
@@ -23,7 +24,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
   //   };
   // }, []);
 
-  const [agb, setAgb] = useState({
+  const [agb] = useState({
     b: 0,
     g: 0,
     a: 0,
@@ -66,28 +67,29 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
     }
     renderer.setAnimationLoop(animate);
 
-    const handleMotion = (event: DeviceOrientationEvent) => {
-      const { alpha, beta, gamma } = event;
-      if (alpha !== null && beta !== null && gamma !== null) {
-        const radAlpha = THREE.MathUtils.degToRad(alpha);
-        const radBeta = THREE.MathUtils.degToRad(beta);
-        const radGamma = THREE.MathUtils.degToRad(gamma);
+    // const handleMotion = (event: DeviceOrientationEvent) => {
+    //   const { alpha, beta, gamma } = event;
+    //   if (alpha !== null && beta !== null && gamma !== null) {
+    //     const radAlpha = THREE.MathUtils.degToRad(alpha);
+    //     const radBeta = THREE.MathUtils.degToRad(beta);
+    //     const radGamma = THREE.MathUtils.degToRad(gamma);
 
-        const euler = new THREE.Euler(radBeta, radGamma, radAlpha, "YXZ");
-        const quaternion = new THREE.Quaternion();
-        quaternion.setFromEuler(euler);
-        camera.setRotationFromQuaternion(quaternion);
+    //     const euler = new THREE.Euler(radBeta, radGamma, radAlpha, "YXZ");
+    //     const quaternion = new THREE.Quaternion();
+    //     quaternion.setFromEuler(euler);
+    //     camera.setRotationFromQuaternion(quaternion);
 
-        setAgb({ b: beta, g: gamma, a: alpha });
-      }
-    };
+    //     setAgb({ b: beta, g: gamma, a: alpha });
+    //   }
+    // };
 
     if (
       typeof DeviceMotionEvent !== "undefined" &&
       typeof (DeviceOrientationEvent as any).requestPermission === "function"
     ) {
       (DeviceOrientationEvent as any).requestPermission().then(() => {
-        window.addEventListener("deviceorientation", handleMotion);
+        // window.addEventListener("deviceorientation", handleMotion);
+        DeviceOrientationControls(camera);
       });
     }
   };
