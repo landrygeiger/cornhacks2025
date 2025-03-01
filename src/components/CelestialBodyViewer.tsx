@@ -62,7 +62,6 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
     camera.position.z = 10;
 
     function animate() {
-      camera.rotation.z += 0.01;
       renderer.render(scene, camera);
     }
     renderer.setAnimationLoop(animate);
