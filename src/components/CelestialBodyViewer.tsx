@@ -27,6 +27,8 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
     py: -1,
     vx: -1,
     vy: -1,
+    a: -1,
+    g: -1,
   });
 
   useEffect(() => {
@@ -44,6 +46,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
     const handleMotion = (event: DeviceOrientationEvent) => {
       const { beta, gamma } = event;
       if (!gamma || !beta) {
+        setDebug({ ...debug, a: -2, g: -2 });
         return;
       }
       velocityRef.current.x += gamma * 0.05;
