@@ -2,7 +2,7 @@ name: Deploy to pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "landry/display-camera"]
 
   workflow_dispatch:
 

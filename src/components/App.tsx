@@ -1,8 +1,8 @@
 import { FC } from "react";
-import Camera from "./Camera";
+import CelestialBodyViewer from "./CelestialBodyViewer";
 
 const App: FC = () => {
-  return <Camera />;
+  return <CelestialBodyViewer celestialBodies={[]} />;
 };
 
 export default App;
