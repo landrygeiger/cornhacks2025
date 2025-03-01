@@ -76,7 +76,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
         setAgb({ b: beta, g: gamma, a: alpha });
 
         // Simple rotation based on device orientation
-        camera.rotation.set(radBeta, radGamma, radAlpha);
+        camera.rotation.set(radBeta, radAlpha, radGamma);
       }
     };
 
