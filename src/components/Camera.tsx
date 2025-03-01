@@ -35,7 +35,7 @@ const Camera: FC<Props> = ({ facingMode }) => {
     if (videoRef.current && cameraStream) {
       videoRef.current.srcObject = cameraStream;
     }
-  }, []);
+  }, [facingMode]);
 
   useEffect(() => {
     initializeCamera();
