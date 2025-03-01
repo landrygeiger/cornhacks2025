@@ -77,7 +77,15 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
       updateCanvas();
     };
 
-    window.addEventListener("deviceorientation", handleMotion);
+    if (
+      typeof DeviceMotionEvent !== "undefined" &&
+      "requestPermission" in DeviceOrientationEvent &&
+      typeof DeviceOrientationEvent.requestPermission === "function"
+    ) {
+      DeviceOrientationEvent.requestPermission().then(() => {
+        window.addEventListener("deviceorientation", handleMotion);
+      });
+    }
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
