@@ -75,6 +75,8 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         height: height ? `${height}rem` : "100%",
       }}
     >
+      <p>{JSON.stringify(positionRef.current)}</p>
+      <p>{JSON.stringify(velocityRef.current)}</p>
       <Camera facingMode={facingMode} />
       <canvas
         ref={canvasRef}
