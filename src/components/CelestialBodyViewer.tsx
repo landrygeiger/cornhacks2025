@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useRef, useState } from "react";
 import Camera from "./Camera";
 import { CelestialBody } from "../types/celestial-body";
 
