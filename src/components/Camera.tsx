@@ -20,8 +20,14 @@ const getUserVideoStream = async (
 };
 
 type Props = {
-  width: "full" | number;
-  height: "full" | number;
+  /**
+   * In rem. Defaults to 100% width.
+   */
+  width?: number;
+  /**
+   * In rem. Defaults to 100% height.
+   */
+  height?: number;
   facingMode?: string;
   className?: string;
 };
@@ -45,7 +51,13 @@ const Camera: FC<Props> = ({ width, height, facingMode, className }) => {
   }, [initializeCamera]);
 
   return (
-    <div className={`relative w-${width} h-${height} ${className}`}>
+    <div
+      className={`relative ${className}`}
+      style={{
+        width: width ? `${width}rem` : "100%",
+        height: height ? `${height}rem` : "100%",
+      }}
+    >
       {error ? (
         <p>{error}</p>
       ) : (

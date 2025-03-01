@@ -4,7 +4,7 @@ import Camera from "./Camera";
 const App: FC = () => {
   return (
     <>
-      <Camera width="full" height="full" />
+      <Camera width={20} height={20} />
     </>
   );
 };
