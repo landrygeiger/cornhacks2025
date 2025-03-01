@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
 import * as THREE from "three";
 import { CelestialBody } from "../types/celestial-body";
+// import Camera from "./Camera";
 
 type Props = {
   /**
@@ -11,11 +12,11 @@ type Props = {
    * In rem. Defaults to 100% height.
    */
   height?: number;
-  facingMode?: string;
+  // facingMode?: string;
   celestialBodies: CelestialBody[];
 };
 
-const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
+const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
   // useEffect(() => {
   //   return () => {
   //     window.removeEventListener("deviceorientation";
@@ -41,7 +42,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.domElement.style.position = "absolute";
-    renderer.domElement.style.top = "5rem";
+    renderer.domElement.style.top = "10";
     document.body.appendChild(renderer.domElement);
 
     // Create a sphere
@@ -93,7 +94,6 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, facingMode }) => {
         Click me
       </button>
       <p>{JSON.stringify(agb)}</p>
-      {/* <Camera facingMode={facingMode} /> */}
       {/* <canvas
         ref={canvasRef}
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
