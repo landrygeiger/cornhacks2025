@@ -78,7 +78,7 @@ export const changeSettingsDecisionTree = async (userText: string) => {
   const systemPrompt: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `You must decide the nature of the user's question or command. If they are attempting to change the Filters for which planets are visible, such as mass, radius, or distance, return '1'. If they are simply asking for information, return '3'. Do not provide any characters other than the number '1' or '3'. Do not include punctuation.`,
+      content: `You must decide the nature of the user's question or command. If they are attempting to change the Filters for which planets are visible, such as mass, radius, or distance, return '1'. If they are attempting to 'select' one or more planets for more information or asking about specific questions about their view, return '2'. If they are simply asking for information, return '3'. Do not provide any characters other than the number '1', '2', or '3'. Do not include punctuation.`,
     },
   ];
 
