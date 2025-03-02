@@ -20,8 +20,7 @@ export const initializeScene = (
   scene: Scene,
   camera: PerspectiveCamera,
   renderer: WebGLRenderer,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setQT: React.Dispatch<React.SetStateAction<THREE.Quaternion>>,
+  // setQT: React.Dispatch<React.SetStateAction<THREE.Quaternion>>,
 ) => {
   setViewSize(width, height, camera, renderer);
   const controls = isMobile()

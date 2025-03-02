@@ -49,8 +49,8 @@ const CelestialBodyViewer: FC<Props> = ({
       document.documentElement.clientWidth /
         document.documentElement.clientHeight,
       0.1,
-      1000
-    )
+      1000,
+    ),
   );
   const rendererRef = useRef(new THREE.WebGLRenderer({ alpha: true }));
 
@@ -72,11 +72,12 @@ const CelestialBodyViewer: FC<Props> = ({
     containerRef.current.appendChild(renderer.domElement);
 
     filteredCelestialBodies.forEach((celestialBody) =>
-      CelestialBody.addToScene(celestialBody, scene, highlightedBodies)
+      CelestialBody.addToScene(celestialBody, scene, highlightedBodies),
     );
     console.log(filteredCelestialBodies.length);
 
-    return initializeScene(width, height, scene, camera, renderer, setCameraQT);
+    // return initializeScene(width, height, scene, camera, renderer, setCameraQT);
+    return initializeScene(width, height, scene, camera, renderer);
   }, [filteredCelestialBodies, highlightedBodies, setCameraQT]);
 
   useEffect(() => {
