@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { transcribe } from "../services/transcription";
 import {
   changeSettingsDecisionTree,
@@ -9,7 +9,10 @@ import {
 import { textToSpeech } from "../services/text-to-speech";
 import OpenAI from "openai";
 import WaveVisualizer from "./WaveVisualizer";
-import { CelestialBodyFilterConfig } from "../hooks/useCelestialBodies";
+import {
+  CelestialBodyFilterConfig,
+  FilterForm,
+} from "../hooks/useCelestialBodies";
 import { CelestialBody } from "../types/celestial-body";
 
 type Props = {
@@ -17,6 +20,7 @@ type Props = {
   setConfigFile: React.Dispatch<
     React.SetStateAction<CelestialBodyFilterConfig>
   >;
+  setConfigForm: React.Dispatch<React.SetStateAction<FilterForm>>;
   configFile: CelestialBodyFilterConfig;
   onscreenCelestialBodies: CelestialBody[];
 };
@@ -25,6 +29,7 @@ const AudioBar: FC<Props> = ({
   setHighlighted,
   setConfigFile,
   configFile,
+  setConfigForm,
   onscreenCelestialBodies,
 }: Props) => {
   const [isRecording, setIsRecording] = useState(false);
@@ -58,7 +63,7 @@ const AudioBar: FC<Props> = ({
     setAudioStream: React.Dispatch<React.SetStateAction<MediaStream | null>>,
     setError: React.Dispatch<React.SetStateAction<string>>,
     mediaRecorderRef: React.RefObject<MediaRecorder | null>,
-    setPrompt: React.Dispatch<React.SetStateAction<Blob>>,
+    setPrompt: React.Dispatch<React.SetStateAction<Blob>>
   ) => {
     // turn on audio stream
     const stream = await getUserAudioStream(setError);
@@ -87,12 +92,22 @@ const AudioBar: FC<Props> = ({
         if (decision === 1) {
           const res = await requestNewFilterConfig(prompt, configFile);
           setConfigFile(res);
+          setConfigForm({
+            maxRadius: res.maxRadius.toString(),
+            minRadius: res.minRadius.toString(),
+            minDistance: res.minDistance.toString(),
+            maxDistance: res.maxDistance.toString(),
+            minMass: res.minMass.toString(),
+            maxMass: res.maxMass.toString(),
+            showExoPlanets: res.showExoPlanets,
+            showSolarSystem: res.showSolarSystem,
+          });
 
           // if 2 use the highlight some planets and the chat endpoint
         } else if (decision == 2) {
           const res = await highlightSomePlanets(
             prompt,
-            onscreenCelestialBodies,
+            onscreenCelestialBodies
           );
           setHighlighted(res);
 
@@ -102,8 +117,8 @@ const AudioBar: FC<Props> = ({
               {
                 role: "assistant",
                 content: `highlighted planets: ${res.map((body) => body.name)}`,
-              },
-            ),
+              }
+            )
           );
 
           const textResp = await chat(prompt, pastMessages);
@@ -114,8 +129,8 @@ const AudioBar: FC<Props> = ({
               .slice(-4)
               .concat(
                 { role: "user", content: prompt },
-                { role: "assistant", content: textResp },
-              ),
+                { role: "assistant", content: textResp }
+              )
           );
 
           setPrompt(speechResp);
@@ -130,8 +145,8 @@ const AudioBar: FC<Props> = ({
               .slice(-4)
               .concat(
                 { role: "user", content: prompt },
-                { role: "assistant", content: textResp },
-              ),
+                { role: "assistant", content: textResp }
+              )
           );
 
           setPrompt(speechResp);
@@ -148,7 +163,7 @@ const AudioBar: FC<Props> = ({
     setAudioStream: React.Dispatch<React.SetStateAction<MediaStream | null>>,
     setError: React.Dispatch<React.SetStateAction<string>>,
     mediaRecorderRef: React.RefObject<MediaRecorder | null>,
-    setPrompt: React.Dispatch<React.SetStateAction<Blob>>,
+    setPrompt: React.Dispatch<React.SetStateAction<Blob>>
   ) => {
     const recording = !isRecording;
     setIsRecording(recording);
@@ -163,7 +178,7 @@ const AudioBar: FC<Props> = ({
 
   const haltRecording = (
     setAudioStream: React.Dispatch<React.SetStateAction<MediaStream | null>>,
-    mediaRecorderRef: React.RefObject<MediaRecorder | null>,
+    mediaRecorderRef: React.RefObject<MediaRecorder | null>
   ) => {
     const mediaRecorder = mediaRecorderRef.current;
     if (mediaRecorder) {
@@ -182,7 +197,7 @@ const AudioBar: FC<Props> = ({
       onError(
         `Failed to initialize audio: ${
           e instanceof Error ? e.message : "An unknown error occurred."
-        }`,
+        }`
       );
       return null;
     }
@@ -222,7 +237,7 @@ const AudioBar: FC<Props> = ({
             setAudioStream,
             setError,
             mediaRecorderRef,
-            setSpeechResponse,
+            setSpeechResponse
           )
         }
         className={`self-center px-3 py-3 rounded-xl font-medium text-white transition-all duration-300 cursor-pointer bg-gray-100/10 hover:bg-gray-100/20`}
