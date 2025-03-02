@@ -76,7 +76,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height, celestialBodies }) => {
     return () => {
       removeEventListener("resize", onWindowResize);
     };
-  }, []);
+  }, [celestialBodies]);
 
   useEffect(() => {
     addEventListener("keydown", (e) => {
