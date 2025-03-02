@@ -97,6 +97,7 @@ const CelestialBodyFilterMenu = ({
         <div className="flex flex-row-reverse">
           {/* TODO add checkboxes */}
           <button
+            className="px-3 py-3 rounded-xl  text-white transition-all duration-300 cursor-pointer bg-gray-100/10 hover:bg-gray-100/20"
             onClick={() => {
               console.log("filters applied");
               return setFilterConfig(parseForm(filterForm));
