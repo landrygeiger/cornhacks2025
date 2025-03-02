@@ -34,13 +34,16 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
   const rendererRef = useRef(new THREE.WebGLRenderer({ alpha: true }));
 
   const initializeScene = useCallback(() => {
-    rendererRef.current.setSize(
-      document.documentElement.clientWidth,
-      document.documentElement.clientHeight
-    );
     rendererRef.current.domElement.style.position = "absolute";
     rendererRef.current.domElement.style.top = "0";
     if (containerRef.current) {
+      rendererRef.current.setSize(
+        containerRef.current.clientWidth,
+        containerRef.current.clientHeight
+      );
+      cameraRef.current.aspect =
+        containerRef.current.clientWidth / containerRef.current.clientHeight;
+      cameraRef.current.updateProjectionMatrix();
       containerRef.current.appendChild(rendererRef.current.domElement);
     }
 
@@ -63,8 +66,9 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
     rendererRef.current.setAnimationLoop(animate);
 
     const onWindowResize = () => {
-      const newWidth = document.documentElement.clientWidth;
-      const newHeight = document.documentElement.clientHeight;
+      if (!containerRef.current) return;
+      const newWidth = containerRef.current.clientWidth;
+      const newHeight = containerRef.current.clientHeight;
       cameraRef.current.aspect = newWidth / newHeight;
       cameraRef.current.updateProjectionMatrix();
       rendererRef.current.setSize(newWidth, newHeight);
