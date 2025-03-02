@@ -1,3 +1,5 @@
+import { Camera } from "three";
+
 /**
  * On iOS devices, you must request permission to use `"deviceorientation"` events.
  * This method detects if a permissions request is necessary and then prompts if so.
@@ -38,4 +40,29 @@ export const isMobile = () => {
       check = true;
   })(navigator.userAgent);
   return check;
+};
+
+export const addKeyboardCameraControls = (camera: Camera) => {
+  const handleKeydown = (e: KeyboardEvent) => {
+    switch (e.key) {
+      case "w":
+        camera.rotation.x += 0.1;
+        break;
+      case "s":
+        camera.rotation.x -= 0.1;
+        break;
+      case "d":
+        camera.rotation.y -= 0.1;
+        break;
+      case "a":
+        camera.rotation.y += 0.1;
+        break;
+    }
+  };
+
+  addEventListener("keydown", handleKeydown);
+
+  return () => {
+    removeEventListener("keydown", handleKeydown);
+  };
 };
