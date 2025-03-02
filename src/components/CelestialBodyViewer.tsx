@@ -47,17 +47,11 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
     document.body.appendChild(renderer.domElement);
 
     // Create a sphere
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const materials = [
-      new THREE.MeshBasicMaterial({ color: 0xff0000 }), // X+ (red)
-      new THREE.MeshBasicMaterial({ color: 0xff00 }), // Y+ (green)
-      new THREE.MeshBasicMaterial({ color: 0x0000ff }), // Z+ (blue)
-      new THREE.MeshBasicMaterial({ color: 0xff0000 }), // X- (red)
-      new THREE.MeshBasicMaterial({ color: 0xff00 }), // Y- (green)
-      new THREE.MeshBasicMaterial({ color: 0x0000ff }), // Z- (blue)
-    ];
-    const cube = new THREE.Mesh(geometry, materials);
-    scene.add(cube);
+    const geometry = new THREE.SphereGeometry(1, 1, 1);
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const sphere = new THREE.Mesh(geometry, material);
+    sphere.position.set(10, 0, 0);
+    scene.add(sphere);
 
     if (
       typeof DeviceMotionEvent !== "undefined" &&
