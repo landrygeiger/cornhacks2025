@@ -6,6 +6,7 @@ import {
 import FilterInput from "./FilterInput";
 import { updateProperty, validAndInRange } from "../utils/pure";
 import { useState } from "react";
+import FilterCheck from "./FilterCheck";
 
 const parseForm = (form: FilterForm): CelestialBodyFilterConfig => ({
   minMass: parseInt(form.minMass),
@@ -112,6 +113,17 @@ const CelestialBodyFilterMenu = ({
               setMaxFilterValue={updateForm("maxDistance")}
               setMinFilterValue={updateForm("minDistance")}
             />
+            <FilterCheck
+              label="Solar System"
+              curr={filterForm.showSolarSystem}
+              setVal={updateForm("showSolarSystem")}
+            />
+            <FilterCheck
+              label="Exo Planets"
+              curr={filterForm.showExoPlanets}
+              setVal={updateForm("showExoPlanets")}
+            />
+
             <div className="flex flex-row-reverse">
               {/* TODO add checkboxes */}
               <button
