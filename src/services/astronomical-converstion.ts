@@ -4,7 +4,7 @@ export const RADecAzEl = (
   UTC: number[],
   Lat: number,
   Lon: number
-): { azimuth: number; elevation: number } => {
+): { azimuth: number; altitude: number } => {
   const jd = new Date().getTime() / 86400000 + 2440587.5;
   const d = jd - 2451543.5;
 
@@ -36,5 +36,5 @@ export const RADecAzEl = (
   const Az = Math.atan2(yhor, xhor) * (180 / Math.PI) + 180;
   const El = Math.asin(zhor) * (180 / Math.PI);
 
-  return { azimuth: Az, elevation: El };
+  return { azimuth: Az, altitude: El };
 };
