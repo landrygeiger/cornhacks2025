@@ -18,4 +18,9 @@ export const filterOnView = (
   });
 };
 
-export const celestialBodyToText = () => {};
+export const celestialBodyToText = (bodies: CelestialBody[]): string[] => {
+  const text = bodies.map((body) => {
+    return body.name;
+  });
+  return text;
+};
