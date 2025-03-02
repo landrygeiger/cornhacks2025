@@ -47,19 +47,23 @@ const modelSizes: Record<string, number> = {
   Mercury: 4,
   Venus: 0.018,
   Mars: 4,
-  Jupiter: 0.02,
-  Saturn: 3,
-  Uranus: 2,
-  Neptune: 2.1,
-  Sun: 2.4,
-  Moon: 0.03,
+  Jupiter: 0.013,
+  Saturn: 1,
+  Uranus: 1.2,
+  Neptune: 1,
+  Sun: 1.4,
   Pluto: 6,
 };
 
-const getSphereRadius = (celestialBody: CelestialBody, isHighlighted: boolean) =>
+const getSphereRadius = (
+  celestialBody: CelestialBody,
+  isHighlighted: boolean
+) =>
   match(celestialBody)
     .with({ kind: "solar-system" }, () => 1)
-    .with({ kind: "exo-planet" }, (exoPlanet) => isHighlighted ? 0.7: (0.2 * exoPlanet.radius) / 2)
+    .with({ kind: "exo-planet" }, (exoPlanet) =>
+      isHighlighted ? 0.7 : (0.2 * exoPlanet.radius) / 2
+    )
     .exhaustive();
 
 const getSphereColor = (celestialBody: CelestialBody) =>
@@ -68,7 +72,11 @@ const getSphereColor = (celestialBody: CelestialBody) =>
     .with("exo-planet", () => 0x808080)
     .exhaustive();
 
-export const addToScene = (celestialBody: CelestialBody, scene: Scene, highLightedBodies: CelestialBody[]) => {
+export const addToScene = (
+  celestialBody: CelestialBody,
+  scene: Scene,
+  highLightedBodies: CelestialBody[]
+) => {
   const isHighlighted = highLightedBodies.includes(celestialBody);
   const phi = MathUtils.degToRad(90 - celestialBody.polarAngle);
   const theta = MathUtils.degToRad(celestialBody.azimuth);
@@ -92,7 +100,9 @@ export const addToScene = (celestialBody: CelestialBody, scene: Scene, highLight
         console.error(`Error loading model for ${celestialBody.name}:`, error)
     );
   } else {
-    const geometry = new SphereGeometry(getSphereRadius(celestialBody, isHighlighted));
+    const geometry = new SphereGeometry(
+      getSphereRadius(celestialBody, isHighlighted)
+    );
     const material = new MeshStandardMaterial({
       color: getSphereColor(celestialBody), // Base color
       emissive: isHighlighted ? 0xffff00 : 0x000000, // Yellow glow when highlighted
@@ -109,14 +119,17 @@ export const addToScene = (celestialBody: CelestialBody, scene: Scene, highLight
   textCanvas.height = 128;
 
   // Draw text on the canvas
-  if((highLightedBodies.length === 0) || isHighlighted){
+  if (highLightedBodies.length === 0 || isHighlighted) {
     ctx.fillStyle = isHighlighted ? "black" : "white";
     ctx.font = "24px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(celestialBody.name, textCanvas.width / 2, textCanvas.height / 2);
+    ctx.fillText(
+      celestialBody.name,
+      textCanvas.width / 2,
+      textCanvas.height / 2
+    );
   }
-
 
   // Create texture from canvas
   const textTexture = new CanvasTexture(textCanvas);
