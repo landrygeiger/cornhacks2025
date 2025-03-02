@@ -80,12 +80,18 @@ export const getExoplanets = async (params: {
             const RA = row["right_ascension"];
             const Dec = row["declination"];
             const polar = RADecAzEl(RA, Dec, UTC, latitude, longitude);
+            const mass = row["mass"];
+            const radius = row["radius"];
+            const distance = row["distance"];
 
             return {
               name: row["name"],
               azimuth: polar.azimuth,
               polarAngle: polar.altitude,
               kind: "exo-planet",
+              mass,
+              radius,
+              distance,
             };
           });
           resolve(celestialBodies);
