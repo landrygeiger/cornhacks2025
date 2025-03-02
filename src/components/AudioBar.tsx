@@ -1,11 +1,32 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { transcribe } from "../services/transcription";
-import { chat } from "../services/text-to-text";
+import {
+  changeSettingsDecisionTree,
+  chat,
+  highlightSomePlanets,
+  requestNewFilterConfig,
+} from "../services/text-to-text";
 import { textToSpeech } from "../services/text-to-speech";
 import OpenAI from "openai";
 import WaveVisualizer from "./WaveVisualizer";
+import { CelestialBodyFilterConfig } from "../hooks/useCelestialBodies";
+import { CelestialBody } from "../types/celestial-body";
 
-const AudioBar: FC = () => {
+type Props = {
+  setHighlighted: React.Dispatch<React.SetStateAction<CelestialBody[]>>;
+  setConfigFile: React.Dispatch<
+    React.SetStateAction<CelestialBodyFilterConfig>
+  >;
+  configFile: CelestialBodyFilterConfig;
+  onscreenCelestialBodies: CelestialBody[];
+};
+
+const AudioBar: FC<Props> = ({
+  setHighlighted,
+  setConfigFile,
+  configFile,
+  onscreenCelestialBodies,
+}: Props) => {
   const [isRecording, setIsRecording] = useState(false);
   const [error, setError] = useState("");
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
@@ -55,24 +76,66 @@ const AudioBar: FC = () => {
 
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(chunks, { type: "audio/wav" });
-        console.time();
-        console.log("Speech To Text");
+
+        // transcribe user text
         const prompt = await transcribe(audioBlob);
-        console.log("LLM");
-        const textResp = await chat(prompt, pastMessages);
-        //consider last 6 messages as context
-        setPastMessages(
-          pastMessages
-            .slice(-4)
-            .concat(
+
+        // determine the path for user text
+        const decision = await changeSettingsDecisionTree(prompt);
+
+        // if 1 use settings change endpoint
+        if (decision === 1) {
+          const res = await requestNewFilterConfig(prompt, configFile);
+          setConfigFile(res);
+
+          // if 2 use the highlight some planets and the chat endpoint
+        } else if (decision == 2) {
+          const res = await highlightSomePlanets(
+            prompt,
+            onscreenCelestialBodies
+          );
+          setHighlighted(res);
+
+          setPastMessages(
+            pastMessages.slice(-4).concat(
               { role: "user", content: prompt },
-              { role: "assistant", content: textResp }
+              {
+                role: "assistant",
+                content: `highlighted planets: ${res.map((body) => body.name)}`,
+              }
             )
-        );
-        console.log("Text to Speech");
-        const speechResp = await textToSpeech(textResp);
-        console.timeEnd();
-        setPrompt(speechResp);
+          );
+
+          const textResp = await chat(prompt, pastMessages);
+          const speechResp = await textToSpeech(textResp);
+
+          setPastMessages(
+            pastMessages
+              .slice(-4)
+              .concat(
+                { role: "user", content: prompt },
+                { role: "assistant", content: textResp }
+              )
+          );
+
+          setPrompt(speechResp);
+
+          // if 3 use the chat endpoint
+        } else {
+          const textResp = await chat(prompt, pastMessages);
+          const speechResp = await textToSpeech(textResp);
+
+          setPastMessages(
+            pastMessages
+              .slice(-4)
+              .concat(
+                { role: "user", content: prompt },
+                { role: "assistant", content: textResp }
+              )
+          );
+
+          setPrompt(speechResp);
+        }
       };
 
       mediaRecorder.start(1000);

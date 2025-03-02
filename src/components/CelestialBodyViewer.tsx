@@ -32,6 +32,10 @@ const CelestialBodyViewer: FC<Props> = ({
     setFilterConfig,
     setFilterForm,
     highlightedBodies,
+    setHighlightedBodies,
+    filterConfig,
+    setCameraQT,
+    onscreenCelestialBodies,
   } = useCelestialBodies({
     onError: console.error,
   });
@@ -72,8 +76,8 @@ const CelestialBodyViewer: FC<Props> = ({
     );
     console.log(filteredCelestialBodies.length);
 
-    return initializeScene(width, height, scene, camera, renderer);
-  }, [filteredCelestialBodies, highlightedBodies]);
+    return initializeScene(width, height, scene, camera, renderer, setCameraQT);
+  }, [filteredCelestialBodies, highlightedBodies, setCameraQT]);
 
   useEffect(() => {
     if (enableKeyboardNav) {
@@ -91,7 +95,12 @@ const CelestialBodyViewer: FC<Props> = ({
       ref={containerRef}
     >
       <Camera />
-      <AudioBar />
+      <AudioBar
+        setHighlighted={setHighlightedBodies}
+        setConfigFile={setFilterConfig}
+        configFile={filterConfig}
+        onscreenCelestialBodies={onscreenCelestialBodies}
+      />
       <CelestialBodyFilterMenu
         setFilterConfig={setFilterConfig}
         setFilterForm={setFilterForm}
