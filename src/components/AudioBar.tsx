@@ -75,7 +75,7 @@ const AudioBar: FC = () => {
         setPrompt(speechResp);
       };
 
-      mediaRecorder.start();
+      mediaRecorder.start(1000);
     }
   };
 
