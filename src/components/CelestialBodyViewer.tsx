@@ -1,9 +1,9 @@
 import { FC, useCallback, useEffect, useRef } from "react";
 import * as THREE from "three";
-import { CelestialBody } from "../types/celestial-body";
 import { DeviceOrientationControls } from "../utils/DeviceOrientationControls";
 import { isMobile } from "../utils/orientation";
 import Camera from "./Camera";
+import * as CelestialBody from "../types/celestial-body";
 
 type Props = {
   /**
@@ -14,10 +14,10 @@ type Props = {
    * In rem. Defaults to 100% height.
    */
   height?: number;
-  celestialBodies: CelestialBody[];
+  celestialBodies: CelestialBody.CelestialBody[];
 };
 
-const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
+const CelestialBodyViewer: FC<Props> = ({ width, height, celestialBodies }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const sceneRef = useRef(new THREE.Scene());
@@ -46,11 +46,9 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
       containerRef.current.appendChild(rendererRef.current.domElement);
     }
 
-    const geometry = new THREE.SphereGeometry(1);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    const sphere = new THREE.Mesh(geometry, material);
-    sphere.position.set(0, 0, -10);
-    sceneRef.current.add(sphere);
+    celestialBodies.forEach((celestialBody) =>
+      CelestialBody.addToScene(celestialBody, sceneRef.current)
+    );
 
     const controls = isMobile()
       ? new DeviceOrientationControls(cameraRef.current)
@@ -81,22 +79,23 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
   }, []);
 
   useEffect(() => {
+    addEventListener("keydown", (e) => {
+      switch (e.key) {
+        case "w":
+          cameraRef.current.rotation.x += 0.25;
+          break;
+        case "s":
+          cameraRef.current.rotation.x -= 0.25;
+          break;
+        case "d":
+          cameraRef.current.rotation.y -= 0.25;
+          break;
+        case "a":
+          cameraRef.current.rotation.y += 0.25;
+          break;
+      }
+    });
     return initializeScene();
-    // addEventListener("keydown", (e) => {
-    //   switch (e.key) {
-    //     case "w":
-    //       cameraRef.current.rotation.x += 0.25;
-    //       break;
-    //     case "s":
-    //       cameraRef.current.rotation.x -= 0.25;
-    //       break;
-    //     case "d":
-    //       cameraRef.current.rotation.y -= 0.25;
-    //       break;
-    //     case "a":
-    //       cameraRef.current.rotation.y += 0.25;
-    //       break;
-    //   }
   });
 
   return (

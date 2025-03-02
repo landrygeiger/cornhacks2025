@@ -107,10 +107,11 @@ const responseToCelestialBodyList = (response: APIResponse) => {
   return celestialBodies;
 };
 
-export const getAllGeoSpacialData: (
-  location?: Location
-) => Promise<CelestialBody[]> = async (location = defaultLocation) => {
-  const url = buildAstronomyAPIUrl(location);
+export const fetchSolarSystemData = async (params: {
+  location?: Location;
+  onError?: (error: string) => void;
+}) => {
+  const url = buildAstronomyAPIUrl(params.location ?? defaultLocation);
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -123,7 +124,13 @@ export const getAllGeoSpacialData: (
     const data: APIResponse = await response.json();
     return responseToCelestialBodyList(data);
   } catch (error) {
-    console.error("Error:", error);
+    if (params.onError) {
+      params.onError(
+        `Failed to fetch solar system data: ${
+          error instanceof Error ? error.message : "An unknown error occurred"
+        }`
+      );
+    }
     return [];
   }
 };
