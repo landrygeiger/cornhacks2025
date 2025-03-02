@@ -1,4 +1,7 @@
-export const RADecAzEl = (
+import { CelestialBody } from "../types/celestial-body";
+import Papa from "papaparse";
+
+const RADecAzEl = (
   RA: number,
   Dec: number,
   UTC: number[],
@@ -37,4 +40,58 @@ export const RADecAzEl = (
   const El = Math.asin(zhor) * (180 / Math.PI);
 
   return { azimuth: Az, altitude: El };
+};
+
+const getTime = (): number[] => {
+  const date = new Date();
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth();
+  const day = date.getUTCDay();
+  const hour = date.getUTCHours();
+  const minute = date.getUTCMinutes();
+  const second = date.getUTCSeconds();
+
+  return [year, month, day, hour, minute, second];
+};
+
+export const getExoplanets = async (): Promise<CelestialBody[]> => {
+  const dataSource = "/cleaned_exoplanet_data.csv";
+
+  return new Promise((resolve, reject) => {
+    Papa.parse(dataSource, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+      complete: function (results) {
+        const csvData = results.data as [];
+        const csvErrors = results.errors;
+
+        if (csvData) {
+          const UTC = getTime();
+          const longitude = -96.69649194582368;
+          const latitude = 40.82121710878628;
+
+          console.log(csvData);
+
+          const celestialBodies: CelestialBody[] = csvData.map((row) => {
+            const RA = row["right_ascension"];
+            const Dec = row["declination"];
+            const polar = RADecAzEl(RA, Dec, UTC, latitude, longitude);
+
+            return {
+              name: row["name"],
+              azimuth: polar.azimuth,
+              polarAngle: polar.altitude,
+            };
+          });
+          resolve(celestialBodies);
+        } else if (csvErrors.length > 0) {
+          reject(csvErrors);
+        } else {
+          reject(new Error("Unknown error parsing CSV"));
+        }
+      },
+    });
+  });
 };
