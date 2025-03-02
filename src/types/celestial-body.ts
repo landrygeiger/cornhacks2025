@@ -17,8 +17,17 @@ export type CelestialBody = {
   name: string;
   azimuth: number;
   polarAngle: number;
-  kind: "solar-system" | "exo-planet";
-};
+} & (
+  | {
+      kind: "exo-planet";
+      mass: number;
+      radius: number;
+      distance: number;
+    }
+  | {
+      kind: "solar-system";
+    }
+);
 
 export const filterOnView = (
   bodies: CelestialBody[],
@@ -48,9 +57,9 @@ const modelSizes: Record<string, number> = {
 };
 
 const getSphereRadius = (celestialBody: CelestialBody) =>
-  match(celestialBody.kind)
-    .with("solar-system", () => 1)
-    .with("exo-planet", () => 0.2)
+  match(celestialBody)
+    .with({ kind: "solar-system" }, () => 1)
+    .with({ kind: "exo-planet" }, (exoPlanet) => (0.2 * exoPlanet.radius) / 2)
     .exhaustive();
 
 const getSphereColor = (celestialBody: CelestialBody) =>
@@ -62,9 +71,8 @@ const getSphereColor = (celestialBody: CelestialBody) =>
 export const addToScene = (celestialBody: CelestialBody, scene: Scene) => {
   const phi = MathUtils.degToRad(90 - celestialBody.polarAngle);
   const theta = MathUtils.degToRad(celestialBody.azimuth);
-  if(celestialBody.kind === 'solar-system'){
-
-    const directionalLight = new DirectionalLight(0xFFFFFF, 1);
+  if (celestialBody.kind === "solar-system") {
+    const directionalLight = new DirectionalLight(0xffffff, 1);
     directionalLight.position.set(10, 10, 10);
     scene.add(directionalLight);
     const loader = new GLTFLoader();
@@ -79,19 +87,18 @@ export const addToScene = (celestialBody: CelestialBody, scene: Scene) => {
         scene.add(model);
       },
       undefined,
-      (error) => console.error(`Error loading model for ${celestialBody.name}:`, error)
+      (error) =>
+        console.error(`Error loading model for ${celestialBody.name}:`, error)
     );
-  }else{
-
-  
-  const geometry = new SphereGeometry(getSphereRadius(celestialBody));
-  const material = new MeshBasicMaterial({
-    color: getSphereColor(celestialBody),
-  });
-  const sphere = new Mesh(geometry, material);
-  sphere.position.setFromSphericalCoords(10, phi, theta);
-  scene.add(sphere);
-}
+  } else {
+    const geometry = new SphereGeometry(getSphereRadius(celestialBody));
+    const material = new MeshBasicMaterial({
+      color: getSphereColor(celestialBody),
+    });
+    const sphere = new Mesh(geometry, material);
+    sphere.position.setFromSphericalCoords(10, phi, theta);
+    scene.add(sphere);
+  }
   const textCanvas = document.createElement("canvas");
   const ctx = textCanvas.getContext("2d");
   if (!ctx) return;
@@ -99,7 +106,7 @@ export const addToScene = (celestialBody: CelestialBody, scene: Scene) => {
   textCanvas.height = 128;
 
   // Draw text on the canvas
-  ctx.fillStyle = "black";
+  ctx.fillStyle = "white";
   ctx.font = "24px Arial";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
