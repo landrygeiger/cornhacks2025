@@ -30,7 +30,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
     a: 0,
   });
 
-  const handleClick = () => {
+  const handleClick = async () => {
     // Scene setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -59,10 +59,17 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
     const cube = new THREE.Mesh(geometry, materials);
     scene.add(cube);
 
+    const controls =
+      typeof DeviceMotionEvent !== "undefined" &&
+      typeof (DeviceOrientationEvent as any).requestPermission === "function"
+        ? (DeviceOrientationEvent as any).requestPermission()
+        : undefined;
+
     // Camera position
     camera.position.z = 10;
 
     function animate() {
+      if (controls) controls.update();
       renderer.render(scene, camera);
     }
     renderer.setAnimationLoop(animate);
