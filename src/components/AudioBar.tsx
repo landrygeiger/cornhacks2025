@@ -3,13 +3,16 @@ import { transcribe } from "../services/transcription";
 import { chat } from "../services/text-to-text";
 import { textToSpeech } from "../services/text-to-speech";
 import OpenAI from "openai";
+import WaveVisualizer from "./WaveVisualizer";
 
 const AudioBar: FC = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [error, setError] = useState("");
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [speechResponse, setSpeechResponse] = useState<Blob>(new Blob());
-  const [pastMessages, setPastMessages] = useState<OpenAI.Chat.Completions.ChatCompletionMessageParam[]>([]);
+  const [pastMessages, setPastMessages] = useState<
+    OpenAI.Chat.Completions.ChatCompletionMessageParam[]
+  >([]);
   const isMounted = useRef(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -58,7 +61,14 @@ const AudioBar: FC = () => {
         console.log("LLM");
         const textResp = await chat(prompt, pastMessages);
         //consider last 6 messages as context
-        setPastMessages(pastMessages.slice(-4).concat({role: 'user', content: prompt}, {role: 'assistant', content: textResp}))
+        setPastMessages(
+          pastMessages
+            .slice(-4)
+            .concat(
+              { role: "user", content: prompt },
+              { role: "assistant", content: textResp }
+            )
+        );
         console.log("Text to Speech");
         const speechResp = await textToSpeech(textResp);
         console.timeEnd();
@@ -131,7 +141,16 @@ const AudioBar: FC = () => {
   };
 
   return (
-    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+    <div
+      className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 flex bg-gray-800 py-2 px-4 rounded-2xl shadow-md shadow-gray-950`}
+    >
+      <WaveVisualizer
+        stream={audioStream}
+        className={`h-20 transition-all duration-300 ${
+          isRecording ? "w-36" : "w-0"
+        }`}
+        color="white"
+      />
       <button
         onClick={() =>
           onClick(
@@ -143,13 +162,9 @@ const AudioBar: FC = () => {
             setSpeechResponse
           )
         }
-        className={`px-6 py-3 rounded-xl font-medium text-white transition-all duration-300 shadow-md ${
-          isRecording
-            ? "bg-[#A32222] hover:bg-[#8C1C1C] shadow-[#6E1616]"
-            : "bg-[#C43D3D] hover:bg-[#A83232] shadow-[#872727]"
-        }`}
+        className={`self-center px-3 py-3 rounded-xl font-medium text-white transition-all duration-300 cursor-pointer hover:bg-gray-100/10`}
       >
-        {isRecording ? "Stop" : "Record"}
+        {isRecording ? "Stop" : "Speak"}
       </button>
       {error && <p>{error}</p>}
     </div>
