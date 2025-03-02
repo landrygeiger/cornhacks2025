@@ -62,7 +62,7 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
     const controls =
       typeof DeviceMotionEvent !== "undefined" &&
       typeof (DeviceOrientationEvent as any).requestPermission === "function"
-        ? (DeviceOrientationEvent as any).requestPermission()
+        ? await (DeviceOrientationEvent as any).requestPermission()
         : undefined;
 
     // Camera position
