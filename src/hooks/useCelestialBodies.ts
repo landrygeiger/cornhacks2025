@@ -25,8 +25,8 @@ export type FilterForm = {
   maxDistance: string;
   minRadius: string;
   maxRadius: string;
-  showExoPlanets: true;
-  showSolarSystem: true;
+  showExoPlanets: boolean;
+  showSolarSystem: boolean;
 };
 
 const defaultFilterForm: FilterForm = {
