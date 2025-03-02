@@ -33,7 +33,7 @@ export const filterOnView = (
   bodies: CelestialBody[],
   viewAzimuth: number,
   viewPolarAngle: number,
-  coneAngle: number
+  coneAngle: number,
 ): CelestialBody[] => {
   return bodies.filter((body) => {
     const azimuthDiff = Math.abs(body.azimuth - viewAzimuth);
@@ -88,7 +88,7 @@ export const addToScene = (celestialBody: CelestialBody, scene: Scene) => {
       },
       undefined,
       (error) =>
-        console.error(`Error loading model for ${celestialBody.name}:`, error)
+        console.error(`Error loading model for ${celestialBody.name}:`, error),
     );
   } else {
     const geometry = new SphereGeometry(getSphereRadius(celestialBody));

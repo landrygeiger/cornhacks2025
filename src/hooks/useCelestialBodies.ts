@@ -32,33 +32,34 @@ const defaultFilterConfig: FilterConfig = {
 
 const filterCelestialBodies = (
   celestialBodies: CelestialBody[],
-  config: FilterConfig
+  config: FilterConfig,
 ) =>
   celestialBodies
     .filter(
       (cb) =>
         cb.kind === "solar-system" ||
-        (cb.mass >= config.minMass && cb.mass <= config.maxMass)
+        (cb.mass >= config.minMass && cb.mass <= config.maxMass),
     )
     .filter(
       (cb) =>
         cb.kind === "solar-system" ||
-        (cb.radius >= config.minRadius && cb.radius <= config.maxRadius)
+        (cb.radius >= config.minRadius && cb.radius <= config.maxRadius),
     )
     .filter(
       (cb) =>
         cb.kind === "solar-system" ||
-        (cb.distance >= config.minDistance && cb.distance <= config.maxDistance)
+        (cb.distance >= config.minDistance &&
+          cb.distance <= config.maxDistance),
     )
     .filter(
       (cb) =>
         cb.kind === "solar-system" ||
-        (cb.kind === "exo-planet" && config.showExoPlanets)
+        (cb.kind === "exo-planet" && config.showExoPlanets),
     )
     .filter(
       (cb) =>
         cb.kind === "exo-planet" ||
-        (cb.kind === "solar-system" && config.showSolarSystem)
+        (cb.kind === "solar-system" && config.showSolarSystem),
     );
 
 const useCelestialBodies = ({ onError }: Params) => {
@@ -88,10 +89,10 @@ const useCelestialBodies = ({ onError }: Params) => {
     () =>
       celestialBodies
         ? setFilteredCelestialBodies(
-            filterCelestialBodies(celestialBodies, filterConfig)
+            filterCelestialBodies(celestialBodies, filterConfig),
           )
         : undefined,
-    [celestialBodies, filterConfig]
+    [celestialBodies, filterConfig],
   );
 
   return {

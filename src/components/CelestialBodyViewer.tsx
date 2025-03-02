@@ -17,6 +17,7 @@ type Props = {
   height?: number;
   celestialBodies: CelestialBody.CelestialBody[];
   enableKeyboardNav?: boolean;
+  setQt: React.Dispatch<React.SetStateAction<THREE.Quaternion>>;
 };
 
 const CelestialBodyViewer: FC<Props> = ({
@@ -24,6 +25,7 @@ const CelestialBodyViewer: FC<Props> = ({
   height,
   celestialBodies,
   enableKeyboardNav,
+  setQt,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -34,8 +36,8 @@ const CelestialBodyViewer: FC<Props> = ({
       document.documentElement.clientWidth /
         document.documentElement.clientHeight,
       0.1,
-      1000
-    )
+      1000,
+    ),
   );
   const rendererRef = useRef(new THREE.WebGLRenderer({ alpha: true }));
 
@@ -57,10 +59,10 @@ const CelestialBodyViewer: FC<Props> = ({
     containerRef.current.appendChild(renderer.domElement);
 
     celestialBodies.forEach((celestialBody) =>
-      CelestialBody.addToScene(celestialBody, scene)
+      CelestialBody.addToScene(celestialBody, scene),
     );
 
-    return initializeScene(width, height, scene, camera, renderer);
+    return initializeScene(width, height, scene, camera, renderer, setQt);
   }, [celestialBodies]);
 
   useEffect(() => {
