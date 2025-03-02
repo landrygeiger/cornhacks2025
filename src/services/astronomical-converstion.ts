@@ -85,6 +85,7 @@ export const getExoplanets = async (params: {
               name: row["name"],
               azimuth: polar.azimuth,
               polarAngle: polar.altitude,
+              kind: "exo-planet",
             };
           });
           resolve(celestialBodies);

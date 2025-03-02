@@ -98,6 +98,7 @@ const responseToCelestialBodyList = (response: APIResponse) => {
         name: cell.name,
         azimuth: position.azimuth.degrees,
         polarAngle: position.altitude.degrees,
+        kind: "solar-system",
       };
 
       celestialBodies.push(celestialBody);

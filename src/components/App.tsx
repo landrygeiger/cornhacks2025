@@ -8,7 +8,7 @@ const App: FC = () => {
   const { celestialBodies } = useCelestialBodies({ onError: console.error });
 
   return isInitialized && celestialBodies ? (
-    <CelestialBodyViewer celestialBodies={celestialBodies} />
+    <CelestialBodyViewer celestialBodies={celestialBodies} enableKeyboardNav />
   ) : (
     <Landing onAppInitialized={() => setIsInitialized(true)} />
   );
