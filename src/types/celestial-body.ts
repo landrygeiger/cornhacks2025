@@ -8,11 +8,13 @@ import {
   Sprite,
   SpriteMaterial,
 } from "three";
+import { match } from "ts-pattern";
 
 export type CelestialBody = {
   name: string;
   azimuth: number;
   polarAngle: number;
+  kind: "solar-system" | "exo-planet";
 };
 
 export const filterOnView = (
@@ -29,9 +31,23 @@ export const filterOnView = (
   });
 };
 
+const getSphereRadius = (celestialBody: CelestialBody) =>
+  match(celestialBody.kind)
+    .with("solar-system", () => 1)
+    .with("exo-planet", () => 0.2)
+    .exhaustive();
+
+const getSphereColor = (celestialBody: CelestialBody) =>
+  match(celestialBody.kind)
+    .with("solar-system", () => 0xffa500)
+    .with("exo-planet", () => 0x808080)
+    .exhaustive();
+
 export const addToScene = (celestialBody: CelestialBody, scene: Scene) => {
-  const geometry = new SphereGeometry(1);
-  const material = new MeshBasicMaterial({ color: 0xff0000 });
+  const geometry = new SphereGeometry(getSphereRadius(celestialBody));
+  const material = new MeshBasicMaterial({
+    color: getSphereColor(celestialBody),
+  });
   const sphere = new Mesh(geometry, material);
 
   const phi = MathUtils.degToRad(90 - celestialBody.polarAngle);

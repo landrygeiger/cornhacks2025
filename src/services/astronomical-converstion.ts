@@ -54,7 +54,9 @@ const getTime = (): number[] => {
   return [year, month, day, hour, minute, second];
 };
 
-export const getExoplanets = async (): Promise<CelestialBody[]> => {
+export const getExoplanets = async (params: {
+  onError?: (error: string) => void;
+}): Promise<CelestialBody[]> => {
   const dataSource = "/cleaned_exoplanet_data.csv";
 
   return new Promise((resolve, reject) => {
@@ -83,12 +85,23 @@ export const getExoplanets = async (): Promise<CelestialBody[]> => {
               name: row["name"],
               azimuth: polar.azimuth,
               polarAngle: polar.altitude,
+              kind: "exo-planet",
             };
           });
           resolve(celestialBodies);
         } else if (csvErrors.length > 0) {
+          if (params.onError) {
+            params.onError(
+              `Failed to parse exoplanets from CSV: ${csvErrors.toString()}`
+            );
+          }
           reject(csvErrors);
         } else {
+          if (params.onError) {
+            params.onError(
+              "Failed to parse exoplanets from CSV: An unknown error occurred"
+            );
+          }
           reject(new Error("Unknown error parsing CSV"));
         }
       },
