@@ -8,7 +8,7 @@ export const textToSpeech = async (inputText: string): Promise<Blob> => {
 
   const audio = await openai.audio.speech.create({
     model: "tts-1",
-    voice: "alloy",
+    voice: "fable",
     input: inputText,
     response_format: "wav",
   });
