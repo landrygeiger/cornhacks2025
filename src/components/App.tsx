@@ -14,7 +14,7 @@ const App: FC = () => {
     })
   }, [])
   return <>
-  <p>{celestialBodies.map((body)=> body.name).toString()}</p><Camera />
+  <p>{celestialBodies.map((body)=> body.name + ": " + body.azimuth +", " + body.polarAngle + "; ")}</p><Camera />
     </>
 ;
 };
