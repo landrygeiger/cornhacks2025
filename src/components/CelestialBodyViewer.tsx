@@ -16,6 +16,7 @@ type Props = {
    */
   height?: number;
   celestialBodies: CelestialBody.CelestialBody[];
+  highlightedBodies?: CelestialBody.CelestialBody[];
   enableKeyboardNav?: boolean;
 };
 
@@ -23,6 +24,7 @@ const CelestialBodyViewer: FC<Props> = ({
   width,
   height,
   celestialBodies,
+  highlightedBodies = [],
   enableKeyboardNav,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -56,12 +58,12 @@ const CelestialBodyViewer: FC<Props> = ({
 
     containerRef.current.appendChild(renderer.domElement);
 
-    celestialBodies.forEach((celestialBody) =>
-      CelestialBody.addToScene(celestialBody, scene)
-    );
+    celestialBodies.forEach((celestialBody) => {
+      CelestialBody.addToScene(celestialBody, scene, highlightedBodies);
+    });
 
     return initializeScene(width, height, scene, camera, renderer);
-  }, [celestialBodies]);
+  }, [celestialBodies, highlightedBodies]);
 
   useEffect(() => {
     if (enableKeyboardNav) {
