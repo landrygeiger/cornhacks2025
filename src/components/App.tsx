@@ -1,22 +1,17 @@
-import { FC, useEffect, useState } from "react";
-import Camera from "./Camera";
-import { getAllGeoSpacialData } from "../services/AstronomyService";
-import { CelestialBody } from "../types/celestial-body";
+import { FC, useState } from "react";
+import CelestialBodyViewer from "./CelestialBodyViewer";
+import Landing from "./Landing";
+import useCelestialBodies from "../hooks/useCelestialBodies";
 
 const App: FC = () => {
+  const [isInitialized, setIsInitialized] = useState(false);
+  const { celestialBodies } = useCelestialBodies({ onError: console.error });
 
-  const [celestialBodies, setCelestialBodies] = useState<CelestialBody[]>([]);
-  
-  useEffect(()=>{
-    getAllGeoSpacialData()
-    .then((bodies: CelestialBody[])=>{
-      setCelestialBodies(bodies);
-    })
-  }, [])
-  return <>
-  <p>{celestialBodies.map((body)=> body.name + ": " + body.azimuth +", " + body.polarAngle + "; ")}</p><Camera />
-    </>
-;
+  return isInitialized && celestialBodies ? (
+    <CelestialBodyViewer celestialBodies={celestialBodies} />
+  ) : (
+    <Landing onAppInitialized={() => setIsInitialized(true)} />
+  );
 };
 
 export default App;
