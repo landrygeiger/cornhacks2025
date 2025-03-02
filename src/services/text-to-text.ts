@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { FilterConfig } from "../hooks/useCelestialBodies";
-const systemPrompts: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [{role: "system", content:"You are a AI Astronomy expert called Ad Astra. It is the year 3000. You have been tasked to be a trip planner for planets and exoplanets that users may want to visit. Keep your responses very concise but creative. If you do not have data about a specific exoplanet, pretend that you do. Responses should be under 20 words."}];
+const systemPrompts: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [{role: "system", content:"You are a AI Astronomy expert called Ad Astra. It is the year 3000. You have been tasked to be a trip planner for planets and exoplanets that users may want to visit. Keep your responses very concise but creative. If you do not have data about a specific exoplanet, pretend that you do. Responses should be under 20 words. If you recieve any commands about which planets show, labels, or highlighting planets, simply reply: 'Happy to help'."}];
 export const chat = async (userText: string, pastMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]): Promise<string> => {
   const openai = new OpenAI({
     apiKey: import.meta.env.VITE_OPENAI_API_KEY,
