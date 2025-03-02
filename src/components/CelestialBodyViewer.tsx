@@ -59,17 +59,20 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
     const cube = new THREE.Mesh(geometry, materials);
     scene.add(cube);
 
-    const controls =
+    if (
       typeof DeviceMotionEvent !== "undefined" &&
       typeof (DeviceOrientationEvent as any).requestPermission === "function"
-        ? await (DeviceOrientationEvent as any).requestPermission()
-        : undefined;
+    ) {
+      await (DeviceOrientationEvent as any).requestPermission();
+    }
+
+    const controls = new DeviceOrientationControls(camera);
 
     // Camera position
     camera.position.z = 10;
 
     function animate() {
-      if (controls) controls.update();
+      if (controls) (controls as any).update();
       renderer.render(scene, camera);
     }
     renderer.setAnimationLoop(animate);
@@ -89,16 +92,6 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
     //     setAgb({ b: beta, g: gamma, a: alpha });
     //   }
     // };
-
-    if (
-      typeof DeviceMotionEvent !== "undefined" &&
-      typeof (DeviceOrientationEvent as any).requestPermission === "function"
-    ) {
-      (DeviceOrientationEvent as any).requestPermission().then(() => {
-        // window.addEventListener("deviceorientation", handleMotion);
-        DeviceOrientationControls(camera);
-      });
-    }
   };
 
   return (
