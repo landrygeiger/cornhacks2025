@@ -7,7 +7,7 @@ export const setViewSize = (
   width: number,
   height: number,
   camera: PerspectiveCamera,
-  renderer: WebGLRenderer
+  renderer: WebGLRenderer,
 ) => {
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
@@ -20,7 +20,7 @@ export const initializeScene = (
   scene: Scene,
   camera: PerspectiveCamera,
   renderer: WebGLRenderer,
-  setQT: React.Dispatch<React.SetStateAction<THREE.Quaternion>>
+  setQT: React.Dispatch<React.SetStateAction<THREE.Quaternion>>,
 ) => {
   setViewSize(width, height, camera, renderer);
   const controls = isMobile()
@@ -30,7 +30,7 @@ export const initializeScene = (
   const animate = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (controls) (controls as any).update();
-    setQT(camera.quaternion.clone());
+    // setQT(camera.quaternion.clone());
     renderer.render(scene, camera);
   };
 

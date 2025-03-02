@@ -10,7 +10,7 @@ const systemPrompts: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
 ];
 export const chat = async (
   userText: string,
-  pastMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]
+  pastMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
 ): Promise<string> => {
   const openai = new OpenAI({
     apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -20,7 +20,7 @@ export const chat = async (
     model: "gpt-4o-mini",
     store: true,
     messages: systemPrompts.concat(
-      pastMessages.concat({ role: "user", content: userText })
+      pastMessages.concat({ role: "user", content: userText }),
     ),
   });
 
@@ -33,14 +33,14 @@ export const chat = async (
 
 export const requestNewFilterConfig = async (
   userText: string,
-  currentFilterConfig: CelestialBodyFilterConfig
+  currentFilterConfig: CelestialBodyFilterConfig,
 ): Promise<CelestialBodyFilterConfig> => {
   const filterConfigSystemPrompt: OpenAI.Chat.Completions.ChatCompletionMessageParam[] =
     [
       {
         role: "system",
         content: `You are a planet visualization tool. Given the user's message, determine if any changes need to be made to the following Filter Config: ${JSON.stringify(
-          currentFilterConfig
+          currentFilterConfig,
         )} For example, if they request exo-planets to be hidden, you should return the Filter Config in the same valid JSON syntax with 'showExoPlanets' set to 'false'. If the user does not request changes, return the same object unchanged. Ensure your response is only a valid JSON object.`,
       },
     ];
@@ -57,7 +57,7 @@ export const requestNewFilterConfig = async (
         model: "gpt-4o-mini",
         store: true,
         messages: systemPrompts.concat(
-          filterConfigSystemPrompt.concat({ role: "user", content: userText })
+          filterConfigSystemPrompt.concat({ role: "user", content: userText }),
         ),
       });
 
@@ -78,7 +78,7 @@ export const changeSettingsDecisionTree = async (userText: string) => {
   const systemPrompt: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `You must decide the nature of the user's question or command. If they are attempting to change the Filters for which planets are visible, such as mass, radius, or distance, return '1'. If they are attempting to 'select' one or more planets for more information or asking about specific questions about their view, return '2'. If they are simply asking for information, return '3'. Do not provide any characters other than the number '1', '2', or '3'. Do not include punctuation.`,
+      content: `You must decide the nature of the user's question or command. If they are attempting to change the Filters for which planets are visible, such as mass, radius, or distance, return '1'. If they are simply asking for information, return '3'. Do not provide any characters other than the number '1' or '3'. Do not include punctuation.`,
     },
   ];
 
@@ -94,7 +94,7 @@ export const changeSettingsDecisionTree = async (userText: string) => {
         model: "gpt-4o-mini",
         store: true,
         messages: systemPrompts.concat(
-          systemPrompt.concat({ role: "user", content: userText })
+          systemPrompt.concat({ role: "user", content: userText }),
         ),
       });
 
@@ -116,13 +116,13 @@ export const changeSettingsDecisionTree = async (userText: string) => {
 
 export const highlightSomePlanets = async (
   userText: string,
-  planetsInView: CelestialBody[]
+  planetsInView: CelestialBody[],
 ) => {
   const systemPrompt: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     {
       role: "system",
       content: `You are a planet selector in a virtual galactic observatory. The user is currenting viewing the following planets and has requested more information: ${planetsInView.map(
-        (t) => t.name
+        (t) => t.name,
       )} Given that list, consider the user's prompt and return a valid JSON string in the following format, selecting as few planets as is reasonable: {"highlightedCelestialBodies": [{"name": "string"}, ... ]}`,
     },
   ];
@@ -139,7 +139,7 @@ export const highlightSomePlanets = async (
         model: "gpt-4o-mini",
         store: true,
         messages: systemPrompts.concat(
-          systemPrompt.concat({ role: "user", content: userText })
+          systemPrompt.concat({ role: "user", content: userText }),
         ),
       });
 
