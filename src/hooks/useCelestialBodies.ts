@@ -8,7 +8,7 @@ type Params = {
   onError?: (error: string) => void;
 };
 
-type FilterConfig = {
+export type FilterConfig = {
   minMass: number;
   maxMass: number;
   minDistance: number;
