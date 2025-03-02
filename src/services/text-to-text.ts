@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { FilterConfig } from "../hooks/useCelestialBodies";
+import { CelestialBodyFilterConfig } from "../hooks/useCelestialBodies";
 import { CelestialBody } from "../types/celestial-body";
 const systemPrompts: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
   {
@@ -33,8 +33,8 @@ export const chat = async (
 
 export const requestNewFilterConfig = async (
   userText: string,
-  currentFilterConfig: FilterConfig
-): Promise<FilterConfig> => {
+  currentFilterConfig: CelestialBodyFilterConfig
+): Promise<CelestialBodyFilterConfig> => {
   const filterConfigSystemPrompt: OpenAI.Chat.Completions.ChatCompletionMessageParam[] =
     [
       {
@@ -63,7 +63,7 @@ export const requestNewFilterConfig = async (
 
       const content = completion.choices[0].message.content || "Error";
 
-      const newFilterConfig: FilterConfig = JSON.parse(content);
+      const newFilterConfig: CelestialBodyFilterConfig = JSON.parse(content);
       return newFilterConfig;
     } catch (error) {
       console.error(`Attempt ${attempts + 1} failed:`, error);

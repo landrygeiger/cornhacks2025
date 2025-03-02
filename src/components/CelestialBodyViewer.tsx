@@ -32,6 +32,8 @@ const CelestialBodyViewer: FC<Props> = ({
     setFilterConfig,
     setFilterForm,
     highlightedBodies,
+    setHighlightedBodies,
+    filterConfig,
   } = useCelestialBodies({
     onError: console.error,
   });
@@ -91,7 +93,11 @@ const CelestialBodyViewer: FC<Props> = ({
       ref={containerRef}
     >
       <Camera />
-      <AudioBar />
+      <AudioBar
+        setHighlighted={setHighlightedBodies}
+        setConfigFile={setFilterConfig}
+        configFile={filterConfig}
+      />
       <CelestialBodyFilterMenu
         setFilterConfig={setFilterConfig}
         setFilterForm={setFilterForm}

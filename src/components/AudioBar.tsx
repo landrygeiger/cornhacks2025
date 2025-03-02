@@ -9,9 +9,22 @@ import {
 import { textToSpeech } from "../services/text-to-speech";
 import OpenAI from "openai";
 import WaveVisualizer from "./WaveVisualizer";
-import { FilterConfig } from "../hooks/useCelestialBodies";
+import { CelestialBodyFilterConfig } from "../hooks/useCelestialBodies";
+import { CelestialBody } from "../types/celestial-body";
 
-const AudioBar: FC = () => {
+type Props = {
+  setHighlighted: React.Dispatch<React.SetStateAction<CelestialBody[]>>;
+  setConfigFile: React.Dispatch<
+    React.SetStateAction<CelestialBodyFilterConfig>
+  >;
+  configFile: CelestialBodyFilterConfig;
+};
+
+const AudioBar: FC<Props> = ({
+  setHighlighted,
+  setConfigFile,
+  configFile,
+}: Props) => {
   const [isRecording, setIsRecording] = useState(false);
   const [error, setError] = useState("");
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
@@ -70,13 +83,13 @@ const AudioBar: FC = () => {
 
         // if 1 use settings change endpoint
         if (decision === 1) {
-          const res = await requestNewFilterConfig(prompt, {} as FilterConfig);
-          //set state of config filter
+          const res = await requestNewFilterConfig(prompt, configFile);
+          setConfigFile(res);
 
           // if 2 use the highlight some planets and the chat endpoint
         } else if (decision == 2) {
           const res = await highlightSomePlanets(prompt, []);
-          // set state of highlighted planets
+          setHighlighted(res);
 
           setPastMessages(
             pastMessages.slice(-4).concat(
