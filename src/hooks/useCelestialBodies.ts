@@ -83,6 +83,9 @@ const filterCelestialBodies = (
 
 const useCelestialBodies = ({ onError }: Params) => {
   const [celestialBodies, setCelestialBodies] = useState<CelestialBody[]>([]);
+  const [highlightedBodies, setHighlightedBodies] = useState<CelestialBody[]>(
+    []
+  );
 
   const [filterForm, setFilterForm] = useState<FilterForm>(defaultFilterForm);
 
@@ -108,6 +111,8 @@ const useCelestialBodies = ({ onError }: Params) => {
 
   return {
     celestialBodies,
+    highlightedBodies,
+    setHighlightedBodies,
     filteredCelestialBodies,
     filterConfig,
     // updateFilterConfig,

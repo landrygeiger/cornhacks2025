@@ -31,10 +31,10 @@ const CelestialBodyViewer: FC<Props> = ({
     filterForm,
     setFilterConfig,
     setFilterForm,
+    highlightedBodies,
   } = useCelestialBodies({
     onError: console.error,
   });
-  console.log("in viewer", filteredCelestialBodies.length);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -68,12 +68,12 @@ const CelestialBodyViewer: FC<Props> = ({
     containerRef.current.appendChild(renderer.domElement);
 
     filteredCelestialBodies.forEach((celestialBody) =>
-      CelestialBody.addToScene(celestialBody, scene)
+      CelestialBody.addToScene(celestialBody, scene, highlightedBodies)
     );
     console.log(filteredCelestialBodies.length);
 
     return initializeScene(width, height, scene, camera, renderer);
-  }, [filteredCelestialBodies]);
+  }, [filteredCelestialBodies, highlightedBodies]);
 
   useEffect(() => {
     if (enableKeyboardNav) {
