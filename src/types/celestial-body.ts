@@ -1,5 +1,6 @@
 import {
   CanvasTexture,
+  DirectionalLight,
   MathUtils,
   Mesh,
   MeshBasicMaterial,
@@ -8,6 +9,8 @@ import {
   Sprite,
   SpriteMaterial,
 } from "three";
+
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { match } from "ts-pattern";
 
 export type CelestialBody = {
@@ -31,6 +34,19 @@ export const filterOnView = (
   });
 };
 
+const modelSizes: Record<string, number> = {
+  Mercury: 4,
+  Venus: 0.018,
+  Mars: 4,
+  Jupiter: 0.02,
+  Saturn: 3,
+  Uranus: 2,
+  Neptune: 2.1,
+  Sun: 2.4,
+  Moon: 0.03,
+  Pluto: 6,
+};
+
 const getSphereRadius = (celestialBody: CelestialBody) =>
   match(celestialBody.kind)
     .with("solar-system", () => 1)
@@ -44,17 +60,38 @@ const getSphereColor = (celestialBody: CelestialBody) =>
     .exhaustive();
 
 export const addToScene = (celestialBody: CelestialBody, scene: Scene) => {
+  const phi = MathUtils.degToRad(90 - celestialBody.polarAngle);
+  const theta = MathUtils.degToRad(celestialBody.azimuth);
+  if(celestialBody.kind === 'solar-system'){
+
+    const directionalLight = new DirectionalLight(0xFFFFFF, 1);
+    directionalLight.position.set(10, 10, 10);
+    scene.add(directionalLight);
+    const loader = new GLTFLoader();
+
+    loader.load(
+      `/models/${celestialBody.name}.glb`,
+      (gltf) => {
+        const model = gltf.scene;
+        const modelSize = modelSizes[celestialBody.name];
+        model.scale.set(modelSize, modelSize, modelSize); // Adjust scale if needed
+        model.position.setFromSphericalCoords(10, phi, theta);
+        scene.add(model);
+      },
+      undefined,
+      (error) => console.error(`Error loading model for ${celestialBody.name}:`, error)
+    );
+  }else{
+
+  
   const geometry = new SphereGeometry(getSphereRadius(celestialBody));
   const material = new MeshBasicMaterial({
     color: getSphereColor(celestialBody),
   });
   const sphere = new Mesh(geometry, material);
-
-  const phi = MathUtils.degToRad(90 - celestialBody.polarAngle);
-  const theta = MathUtils.degToRad(celestialBody.azimuth);
   sphere.position.setFromSphericalCoords(10, phi, theta);
   scene.add(sphere);
-
+}
   const textCanvas = document.createElement("canvas");
   const ctx = textCanvas.getContext("2d");
   if (!ctx) return;
@@ -62,7 +99,7 @@ export const addToScene = (celestialBody: CelestialBody, scene: Scene) => {
   textCanvas.height = 128;
 
   // Draw text on the canvas
-  ctx.fillStyle = "white";
+  ctx.fillStyle = "black";
   ctx.font = "24px Arial";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";

@@ -4,6 +4,7 @@ import * as CelestialBody from "../types/celestial-body";
 import { addKeyboardCameraControls } from "../utils/orientation";
 import { clearScene, initializeScene } from "../utils/render";
 import Camera from "./Camera";
+import { AmbientLight } from "three";
 
 type Props = {
   /**
@@ -49,6 +50,9 @@ const CelestialBodyViewer: FC<Props> = ({
 
     renderer.domElement.style.position = "absolute";
     renderer.domElement.style.top = "0";
+
+    const ambientLight = new AmbientLight(0xffffff, 1);
+    scene.add(ambientLight);
 
     containerRef.current.appendChild(renderer.domElement);
 

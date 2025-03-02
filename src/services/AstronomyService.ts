@@ -100,8 +100,10 @@ const responseToCelestialBodyList = (response: APIResponse) => {
         polarAngle: position.altitude.degrees,
         kind: "solar-system",
       };
-
-      celestialBodies.push(celestialBody);
+      if(celestialBody.name !== 'Earth'){
+        console.log(celestialBody.name);
+        celestialBodies.push(celestialBody);
+      }
     });
   });
 
