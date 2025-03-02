@@ -33,7 +33,10 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
   const rendererRef = useRef(new THREE.WebGLRenderer({ alpha: true }));
 
   const initializeScene = useCallback(() => {
-    rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+    rendererRef.current.setSize(
+      document.documentElement.clientWidth,
+      document.documentElement.clientHeight
+    );
     rendererRef.current.domElement.style.position = "absolute";
     rendererRef.current.domElement.style.top = "0";
     if (containerRef.current)
@@ -57,15 +60,23 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
 
     rendererRef.current.setAnimationLoop(animate);
 
-    addEventListener("resize", () => {
-      cameraRef.current.aspect = window.innerWidth / window.innerHeight;
+    const onWindowResize = () => {
+      const newWidth = document.documentElement.clientWidth;
+      const newHeight = document.documentElement.clientHeight;
+      cameraRef.current.aspect = newWidth / newHeight;
       cameraRef.current.updateProjectionMatrix();
-      rendererRef.current.setSize(window.innerWidth, window.innerHeight);
-    });
+      rendererRef.current.setSize(newWidth, newHeight);
+    };
+
+    addEventListener("resize", onWindowResize);
+
+    return () => {
+      removeEventListener("resize", onWindowResize);
+    };
   }, []);
 
   useEffect(() => {
-    initializeScene();
+    return initializeScene();
     // addEventListener("keydown", (e) => {
     //   switch (e.key) {
     //     case "w":
