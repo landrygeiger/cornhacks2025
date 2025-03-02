@@ -137,7 +137,8 @@ const AudioBar: FC<Props> = ({
           setPrompt(speechResp);
         }
       };
-      mediaRecorder.start();
+
+      mediaRecorder.start(1000);
     }
   };
 
