@@ -8,3 +8,8 @@ export const updateProperty =
   <K extends keyof T>(field: K) =>
   (newValue: T[K]) =>
     setState((x) => setProperty(x)(field)(newValue));
+
+export const validAndInRange = (num: string, min: number, max: number) => {
+  const val = parseFloat(num);
+  return !isNaN(val) && val >= min && val <= max;
+};

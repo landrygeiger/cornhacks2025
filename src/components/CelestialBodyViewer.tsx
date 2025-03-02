@@ -1,10 +1,13 @@
 import { FC, useEffect, useRef } from "react";
 import * as THREE from "three";
+import { AmbientLight } from "three";
+import useCelestialBodies from "../hooks/useCelestialBodies";
 import * as CelestialBody from "../types/celestial-body";
 import { addKeyboardCameraControls } from "../utils/orientation";
 import { clearScene, initializeScene } from "../utils/render";
+import AudioBar from "./AudioBar";
 import Camera from "./Camera";
-import { AmbientLight } from "three";
+import CelestialBodyFilterMenu from "./CelestialBodyFilterMenu";
 
 type Props = {
   /**
@@ -15,18 +18,24 @@ type Props = {
    * In rem. Defaults to 100% height.
    */
   height?: number;
-  celestialBodies: CelestialBody.CelestialBody[];
-  highlightedBodies?: CelestialBody.CelestialBody[];
   enableKeyboardNav?: boolean;
 };
 
 const CelestialBodyViewer: FC<Props> = ({
   width,
   height,
-  celestialBodies,
-  highlightedBodies = [],
   enableKeyboardNav,
 }) => {
+  const {
+    filteredCelestialBodies,
+    filterForm,
+    setFilterConfig,
+    setFilterForm,
+    highlightedBodies,
+  } = useCelestialBodies({
+    onError: console.error,
+  });
+
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const sceneRef = useRef(new THREE.Scene());
@@ -58,12 +67,13 @@ const CelestialBodyViewer: FC<Props> = ({
 
     containerRef.current.appendChild(renderer.domElement);
 
-    celestialBodies.forEach((celestialBody) => {
-      CelestialBody.addToScene(celestialBody, scene, highlightedBodies);
-    });
+    filteredCelestialBodies.forEach((celestialBody) =>
+      CelestialBody.addToScene(celestialBody, scene, highlightedBodies)
+    );
+    console.log(filteredCelestialBodies.length);
 
     return initializeScene(width, height, scene, camera, renderer);
-  }, [celestialBodies, highlightedBodies]);
+  }, [filteredCelestialBodies, highlightedBodies]);
 
   useEffect(() => {
     if (enableKeyboardNav) {
@@ -81,6 +91,12 @@ const CelestialBodyViewer: FC<Props> = ({
       ref={containerRef}
     >
       <Camera />
+      <AudioBar />
+      <CelestialBodyFilterMenu
+        setFilterConfig={setFilterConfig}
+        setFilterForm={setFilterForm}
+        filterForm={filterForm}
+      />
     </div>
   );
 };
