@@ -14,7 +14,6 @@ type Props = {
    * In rem. Defaults to 100% height.
    */
   height?: number;
-  // facingMode?: string;
   celestialBodies: CelestialBody[];
 };
 
