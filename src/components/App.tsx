@@ -5,10 +5,15 @@ import useCelestialBodies from "../hooks/useCelestialBodies";
 
 const App: FC = () => {
   const [isInitialized, setIsInitialized] = useState(false);
-  const { celestialBodies } = useCelestialBodies({ onError: console.error });
+  const { filteredCelestialBodies } = useCelestialBodies({
+    onError: console.error,
+  });
 
-  return isInitialized && celestialBodies ? (
-    <CelestialBodyViewer celestialBodies={celestialBodies} enableKeyboardNav />
+  return isInitialized && filteredCelestialBodies ? (
+    <CelestialBodyViewer
+      celestialBodies={filteredCelestialBodies}
+      enableKeyboardNav
+    />
   ) : (
     <Landing onAppInitialized={() => setIsInitialized(true)} />
   );
