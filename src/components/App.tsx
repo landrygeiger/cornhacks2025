@@ -1,8 +1,15 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import CelestialBodyViewer from "./CelestialBodyViewer";
+import Landing from "./Landing";
 
 const App: FC = () => {
-  return <CelestialBodyViewer celestialBodies={[]} />;
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  return isInitialized ? (
+    <CelestialBodyViewer celestialBodies={[]} />
+  ) : (
+    <Landing onAppInitialized={() => setIsInitialized(true)} />
+  );
 };
 
 export default App;

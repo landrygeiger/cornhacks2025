@@ -1,8 +1,9 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { CelestialBody } from "../types/celestial-body";
 import { DeviceOrientationControls } from "../utils/DeviceOrientationControls";
-// import Camera from "./Camera";
+import { isMobile } from "../utils/orientation";
+import Camera from "./Camera";
 
 type Props = {
   /**
@@ -18,20 +19,9 @@ type Props = {
 };
 
 const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
-  // useEffect(() => {
-  //   return () => {
-  //     window.removeEventListener("deviceorientation";
-  //   };
-  // }, []);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const [agb] = useState({
-    b: 0,
-    g: 0,
-    a: 0,
-  });
-
-  const handleClick = async () => {
-    // Scene setup
+  useEffect(() => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
@@ -40,72 +30,59 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
       1000
     );
 
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setClearColor(0x000000, 0);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.domElement.style.position = "absolute";
-    renderer.domElement.style.top = "10";
-    document.body.appendChild(renderer.domElement);
+    renderer.domElement.style.top = "0";
+    if (containerRef.current)
+      containerRef.current.appendChild(renderer.domElement);
 
-    // Create a sphere
-    const geometry = new THREE.SphereGeometry(1, 1, 1);
+    const geometry = new THREE.SphereGeometry(1);
     const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const sphere = new THREE.Mesh(geometry, material);
-    sphere.position.set(10, 0, 0);
+    sphere.position.set(0, 0, -10);
     scene.add(sphere);
 
-    if (
-      typeof DeviceMotionEvent !== "undefined" &&
-      typeof (DeviceOrientationEvent as any).requestPermission === "function"
-    ) {
-      await (DeviceOrientationEvent as any).requestPermission();
-    }
+    const controls = isMobile()
+      ? new DeviceOrientationControls(camera)
+      : undefined;
 
-    const controls = new DeviceOrientationControls(camera);
-
-    // Camera position
-    camera.position.z = 10;
-
-    function animate() {
+    const animate = () => {
       if (controls) (controls as any).update();
       renderer.render(scene, camera);
-    }
+    };
+
+    addEventListener("keydown", (e) => {
+      switch (e.key) {
+        case "w":
+          camera.rotation.x += 0.25;
+          break;
+        case "s":
+          camera.rotation.x -= 0.25;
+          break;
+        case "d":
+          camera.rotation.y -= 0.25;
+          break;
+        case "a":
+          camera.rotation.y += 0.25;
+          break;
+      }
+    });
+
     renderer.setAnimationLoop(animate);
-
-    // const handleMotion = (event: DeviceOrientationEvent) => {
-    //   const { alpha, beta, gamma } = event;
-    //   if (alpha !== null && beta !== null && gamma !== null) {
-    //     const radAlpha = THREE.MathUtils.degToRad(alpha);
-    //     const radBeta = THREE.MathUtils.degToRad(beta);
-    //     const radGamma = THREE.MathUtils.degToRad(gamma);
-
-    //     const euler = new THREE.Euler(radBeta, radGamma, radAlpha, "YXZ");
-    //     const quaternion = new THREE.Quaternion();
-    //     quaternion.setFromEuler(euler);
-    //     camera.setRotationFromQuaternion(quaternion);
-
-    //     setAgb({ b: beta, g: gamma, a: alpha });
-    //   }
-    // };
-  };
+  });
 
   return (
     <div
       style={{
         width: width ? `${width}rem` : "100%",
         height: height ? `${height}rem` : "100%",
+        position: "relative",
       }}
+      ref={containerRef}
     >
-      <p id="egg">yoyoyo</p>
-      <button onClick={handleClick} className="">
-        Click me
-      </button>
-      <p>{`b: ${agb.b.toFixed(2)}, g: ${agb.g.toFixed(2)}, a: ${agb.a.toFixed(
-        2
-      )}`}</p>
-      {/* <canvas
-        ref={canvasRef}
-        className="absolute top-0 left-0 w-full h-full pointer-events-none"
-      /> */}
+      <Camera />
     </div>
   );
 };
