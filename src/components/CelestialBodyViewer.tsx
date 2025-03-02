@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { CelestialBody } from "../types/celestial-body";
 import { DeviceOrientationControls } from "../utils/DeviceOrientationControls";
@@ -21,56 +21,66 @@ type Props = {
 const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
+  const sceneRef = useRef(new THREE.Scene());
+  const cameraRef = useRef(
+    new THREE.PerspectiveCamera(
       75,
       window.innerWidth / window.innerHeight,
       0.1,
       1000
-    );
+    )
+  );
+  const rendererRef = useRef(new THREE.WebGLRenderer({ alpha: true }));
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true });
-    renderer.setClearColor(0x000000, 0);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.domElement.style.position = "absolute";
-    renderer.domElement.style.top = "0";
+  const initializeScene = useCallback(() => {
+    rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+    rendererRef.current.domElement.style.position = "absolute";
+    rendererRef.current.domElement.style.top = "0";
     if (containerRef.current)
-      containerRef.current.appendChild(renderer.domElement);
+      containerRef.current.appendChild(rendererRef.current.domElement);
 
     const geometry = new THREE.SphereGeometry(1);
     const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const sphere = new THREE.Mesh(geometry, material);
     sphere.position.set(0, 0, -10);
-    scene.add(sphere);
+    sceneRef.current.add(sphere);
 
     const controls = isMobile()
-      ? new DeviceOrientationControls(camera)
+      ? new DeviceOrientationControls(cameraRef.current)
       : undefined;
 
     const animate = () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (controls) (controls as any).update();
-      renderer.render(scene, camera);
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
     };
 
-    addEventListener("keydown", (e) => {
-      switch (e.key) {
-        case "w":
-          camera.rotation.x += 0.25;
-          break;
-        case "s":
-          camera.rotation.x -= 0.25;
-          break;
-        case "d":
-          camera.rotation.y -= 0.25;
-          break;
-        case "a":
-          camera.rotation.y += 0.25;
-          break;
-      }
-    });
+    rendererRef.current.setAnimationLoop(animate);
 
-    renderer.setAnimationLoop(animate);
+    addEventListener("resize", () => {
+      cameraRef.current.aspect = window.innerWidth / window.innerHeight;
+      cameraRef.current.updateProjectionMatrix();
+      rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+    });
+  }, []);
+
+  useEffect(() => {
+    initializeScene();
+    // addEventListener("keydown", (e) => {
+    //   switch (e.key) {
+    //     case "w":
+    //       cameraRef.current.rotation.x += 0.25;
+    //       break;
+    //     case "s":
+    //       cameraRef.current.rotation.x -= 0.25;
+    //       break;
+    //     case "d":
+    //       cameraRef.current.rotation.y -= 0.25;
+    //       break;
+    //     case "a":
+    //       cameraRef.current.rotation.y += 0.25;
+    //       break;
+    //   }
   });
 
   return (
