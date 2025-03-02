@@ -25,7 +25,8 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
   const cameraRef = useRef(
     new THREE.PerspectiveCamera(
       75,
-      window.innerWidth / window.innerHeight,
+      document.documentElement.clientWidth /
+        document.documentElement.clientHeight,
       0.1,
       1000
     )
@@ -39,8 +40,9 @@ const CelestialBodyViewer: FC<Props> = ({ width, height }) => {
     );
     rendererRef.current.domElement.style.position = "absolute";
     rendererRef.current.domElement.style.top = "0";
-    if (containerRef.current)
+    if (containerRef.current) {
       containerRef.current.appendChild(rendererRef.current.domElement);
+    }
 
     const geometry = new THREE.SphereGeometry(1);
     const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
