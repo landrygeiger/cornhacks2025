@@ -206,7 +206,7 @@ const AudioBar: FC = () => {
             setSpeechResponse
           )
         }
-        className={`self-center px-3 py-3 rounded-xl font-medium text-white transition-all duration-300 cursor-pointer hover:bg-gray-100/10`}
+        className={`self-center px-3 py-3 rounded-xl font-medium text-white transition-all duration-300 cursor-pointer bg-gray-100/10 hover:bg-gray-100/20`}
       >
         {isRecording ? "Stop" : "Speak"}
       </button>

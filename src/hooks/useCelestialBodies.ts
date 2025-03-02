@@ -2,13 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchSolarSystemData } from "../services/AstronomyService";
 import { CelestialBody } from "../types/celestial-body";
 import { getExoplanets } from "../services/astronomical-converstion";
-import { updateProperty } from "../utils/pure";
 
 type Params = {
   onError?: (error: string) => void;
 };
 
-export type FilterConfig = {
+export type CelestialBodyFilterConfig = {
   minMass: number;
   maxMass: number;
   minDistance: number;
@@ -18,8 +17,29 @@ export type FilterConfig = {
   showExoPlanets: boolean;
   showSolarSystem: boolean;
 };
+export type FilterForm = {
+  minMass: string;
+  maxMass: string;
+  minDistance: string;
+  maxDistance: string;
+  minRadius: string;
+  maxRadius: string;
+  showExoPlanets: true;
+  showSolarSystem: true;
+};
 
-const defaultFilterConfig: FilterConfig = {
+const defaultFilterForm: FilterForm = {
+  minMass: "0",
+  maxMass: "100",
+  minDistance: "0",
+  maxDistance: "10000",
+  minRadius: "0",
+  maxRadius: "10",
+  showExoPlanets: true,
+  showSolarSystem: true,
+};
+
+export const defaultFilterConfig: CelestialBodyFilterConfig = {
   minMass: 0,
   maxMass: 100,
   minDistance: 0,
@@ -32,7 +52,7 @@ const defaultFilterConfig: FilterConfig = {
 
 const filterCelestialBodies = (
   celestialBodies: CelestialBody[],
-  config: FilterConfig
+  config: CelestialBodyFilterConfig
 ) =>
   celestialBodies
     .filter(
@@ -62,17 +82,22 @@ const filterCelestialBodies = (
     );
 
 const useCelestialBodies = ({ onError }: Params) => {
-  const [celestialBodies, setCelestialBodies] = useState<
-    CelestialBody[] | undefined
-  >(undefined);
-  const [filteredCelestialBodies, setFilteredCelestialBodies] = useState<
-    CelestialBody[] | undefined
-  >(undefined);
+  const [celestialBodies, setCelestialBodies] = useState<CelestialBody[]>([]);
+  const [highlightedBodies, setHighlightedBodies] = useState<CelestialBody[]>(
+    []
+  );
+
+  const [filterForm, setFilterForm] = useState<FilterForm>(defaultFilterForm);
 
   const [filterConfig, setFilterConfig] =
-    useState<FilterConfig>(defaultFilterConfig);
+    useState<CelestialBodyFilterConfig>(defaultFilterConfig);
 
-  const updateFilterConfig = updateProperty(setFilterConfig);
+  const filteredCelestialBodies = filterCelestialBodies(
+    celestialBodies ?? [],
+    filterConfig
+  );
+  console.log("inside hook", filteredCelestialBodies.length);
+  // const updateFilterConfig = updateProperty(setFilterConfig);
 
   const fetchCelestialBodies = useCallback(async () => {
     const solarSystem = await fetchSolarSystemData({ onError });
@@ -84,22 +109,17 @@ const useCelestialBodies = ({ onError }: Params) => {
     fetchCelestialBodies();
   }, [fetchCelestialBodies]);
 
-  useEffect(
-    () =>
-      celestialBodies
-        ? setFilteredCelestialBodies(
-            filterCelestialBodies(celestialBodies, filterConfig)
-          )
-        : undefined,
-    [celestialBodies, filterConfig]
-  );
-
   return {
     celestialBodies,
+    highlightedBodies,
+    setHighlightedBodies,
     filteredCelestialBodies,
     filterConfig,
-    updateFilterConfig,
+    // updateFilterConfig,
+    setFilterConfig,
     fetchCelestialBodies,
+    filterForm,
+    setFilterForm,
   };
 };
 

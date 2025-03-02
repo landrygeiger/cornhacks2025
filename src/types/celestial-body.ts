@@ -3,7 +3,7 @@ import {
   DirectionalLight,
   MathUtils,
   Mesh,
-  MeshBasicMaterial,
+  MeshStandardMaterial,
   Scene,
   SphereGeometry,
   Sprite,
@@ -56,10 +56,10 @@ const modelSizes: Record<string, number> = {
   Pluto: 6,
 };
 
-const getSphereRadius = (celestialBody: CelestialBody) =>
+const getSphereRadius = (celestialBody: CelestialBody, isHighlighted: boolean) =>
   match(celestialBody)
     .with({ kind: "solar-system" }, () => 1)
-    .with({ kind: "exo-planet" }, (exoPlanet) => (0.2 * exoPlanet.radius) / 2)
+    .with({ kind: "exo-planet" }, (exoPlanet) => isHighlighted ? 0.7: (0.2 * exoPlanet.radius) / 2)
     .exhaustive();
 
 const getSphereColor = (celestialBody: CelestialBody) =>
@@ -68,7 +68,8 @@ const getSphereColor = (celestialBody: CelestialBody) =>
     .with("exo-planet", () => 0x808080)
     .exhaustive();
 
-export const addToScene = (celestialBody: CelestialBody, scene: Scene) => {
+export const addToScene = (celestialBody: CelestialBody, scene: Scene, highLightedBodies: CelestialBody[]) => {
+  const isHighlighted = highLightedBodies.includes(celestialBody);
   const phi = MathUtils.degToRad(90 - celestialBody.polarAngle);
   const theta = MathUtils.degToRad(celestialBody.azimuth);
   if (celestialBody.kind === "solar-system") {
@@ -91,9 +92,11 @@ export const addToScene = (celestialBody: CelestialBody, scene: Scene) => {
         console.error(`Error loading model for ${celestialBody.name}:`, error)
     );
   } else {
-    const geometry = new SphereGeometry(getSphereRadius(celestialBody));
-    const material = new MeshBasicMaterial({
-      color: getSphereColor(celestialBody),
+    const geometry = new SphereGeometry(getSphereRadius(celestialBody, isHighlighted));
+    const material = new MeshStandardMaterial({
+      color: getSphereColor(celestialBody), // Base color
+      emissive: isHighlighted ? 0xffff00 : 0x000000, // Yellow glow when highlighted
+      emissiveIntensity: isHighlighted ? 2 : 0, // Increase intensity when highlighted
     });
     const sphere = new Mesh(geometry, material);
     sphere.position.setFromSphericalCoords(10, phi, theta);
@@ -106,11 +109,14 @@ export const addToScene = (celestialBody: CelestialBody, scene: Scene) => {
   textCanvas.height = 128;
 
   // Draw text on the canvas
-  ctx.fillStyle = "white";
-  ctx.font = "24px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(celestialBody.name, textCanvas.width / 2, textCanvas.height / 2);
+  if((highLightedBodies.length === 0) || isHighlighted){
+    ctx.fillStyle = isHighlighted ? "black" : "white";
+    ctx.font = "24px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(celestialBody.name, textCanvas.width / 2, textCanvas.height / 2);
+  }
+
 
   // Create texture from canvas
   const textTexture = new CanvasTexture(textCanvas);
