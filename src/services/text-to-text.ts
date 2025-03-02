@@ -1,8 +1,17 @@
 import OpenAI from "openai";
 import { FilterConfig } from "../hooks/useCelestialBodies";
 import { CelestialBody } from "../types/celestial-body";
-const systemPrompts: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [{role: "system", content:"You are a AI Astronomy expert called Ad Astra. It is sometime in the future. You have been tasked to be a trip planner for planets and exoplanets that users may want to visit. Keep your responses very concise but creative. If you do not have data about a specific exoplanet, pretend that you do, without offering information that is not scientifically plausable. Responses should be under 20 words."}];
-export const chat = async (userText: string, pastMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]): Promise<string> => {
+const systemPrompts: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+  {
+    role: "system",
+    content:
+      "You are a AI Astronomy expert called Ad Astra. It is sometime in the future. You have been tasked to be a trip planner for planets and exoplanets that users may want to visit. Keep your responses very concise but creative. If you do not have data about a specific exoplanet, pretend that you do, without offering information that is not scientifically plausable. Responses should be under 20 words.",
+  },
+];
+export const chat = async (
+  userText: string,
+  pastMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]
+): Promise<string> => {
   const openai = new OpenAI({
     apiKey: import.meta.env.VITE_OPENAI_API_KEY,
     dangerouslyAllowBrowser: true,
@@ -10,7 +19,9 @@ export const chat = async (userText: string, pastMessages: OpenAI.Chat.Completio
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     store: true,
-    messages: systemPrompts.concat(pastMessages.concat({ role: "user", content: userText })),
+    messages: systemPrompts.concat(
+      pastMessages.concat({ role: "user", content: userText })
+    ),
   });
 
   const content = completion.choices[0].message.content
@@ -24,14 +35,15 @@ export const requestNewFilterConfig = async (
   userText: string,
   currentFilterConfig: FilterConfig
 ): Promise<FilterConfig> => {
-  const filterConfigSystemPrompt: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-    {
-      role: "system",
-      content: `You are a planet visualization tool. Given the user's message, determine if any changes need to be made to the following Filter Config: ${JSON.stringify(
-        currentFilterConfig
-      )} For example, if they request exo-planets to be hidden, you should return the Filter Config in the same valid JSON syntax with 'showExoPlanets' set to 'false'. If the user does not request changes, return the same object unchanged. Ensure your response is only a valid JSON object.`,
-    },
-  ];
+  const filterConfigSystemPrompt: OpenAI.Chat.Completions.ChatCompletionMessageParam[] =
+    [
+      {
+        role: "system",
+        content: `You are a planet visualization tool. Given the user's message, determine if any changes need to be made to the following Filter Config: ${JSON.stringify(
+          currentFilterConfig
+        )} For example, if they request exo-planets to be hidden, you should return the Filter Config in the same valid JSON syntax with 'showExoPlanets' set to 'false'. If the user does not request changes, return the same object unchanged. Ensure your response is only a valid JSON object.`,
+      },
+    ];
 
   const openai = new OpenAI({
     apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -63,7 +75,6 @@ export const requestNewFilterConfig = async (
 };
 
 export const changeSettingsDecisionTree = async (userText: string) => {
-
   const systemPrompt: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     {
       role: "system",
@@ -90,7 +101,7 @@ export const changeSettingsDecisionTree = async (userText: string) => {
       const content = completion.choices[0].message.content || "Error";
 
       const result: number = parseInt(content);
-      if(result < 1 || result > 3){
+      if (result < 1 || result > 3) {
         throw new Error("Something went wrong");
       }
       return result;
@@ -103,12 +114,16 @@ export const changeSettingsDecisionTree = async (userText: string) => {
   return 3;
 };
 
-export const highlightSomePlanets = async (userText: string, planetsInView: CelestialBody[]) => {
-
+export const highlightSomePlanets = async (
+  userText: string,
+  planetsInView: CelestialBody[]
+) => {
   const systemPrompt: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `You are a planet selector in a virtual galactic observatory. The user is currenting viewing the following planets and has requested more information: ${planetsInView.map((t) => t.name)} Given that list, consider the user's prompt and return a valid JSON string in the following format, selecting as few planets as is reasonable: {"highlightedCelestialBodies": [{"name": "string"}, ... ]}`,
+      content: `You are a planet selector in a virtual galactic observatory. The user is currenting viewing the following planets and has requested more information: ${planetsInView.map(
+        (t) => t.name
+      )} Given that list, consider the user's prompt and return a valid JSON string in the following format, selecting as few planets as is reasonable: {"highlightedCelestialBodies": [{"name": "string"}, ... ]}`,
     },
   ];
 
@@ -131,10 +146,12 @@ export const highlightSomePlanets = async (userText: string, planetsInView: Cele
       const content = completion.choices[0].message.content || "Error";
 
       const result = JSON.parse(content);
-      if(!result.highlightedCelestialBodies){
+      if (!result.highlightedCelestialBodies) {
         throw new Error("Something went wrong");
       }
-      return planetsInView.filter((value)=>{result.highlightedCelestialBodies.includes(value.name)});
+      return planetsInView.filter((value) => {
+        result.highlightedCelestialBodies.includes(value.name);
+      });
     } catch (error) {
       console.error(`Attempt ${attempts + 1} failed:`, error);
       attempts++;
@@ -143,4 +160,3 @@ export const highlightSomePlanets = async (userText: string, planetsInView: Cele
   console.warn("Returning default value after 5 failed attempts.");
   return [];
 };
-

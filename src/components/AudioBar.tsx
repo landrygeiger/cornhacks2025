@@ -1,9 +1,15 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { transcribe } from "../services/transcription";
-import { chat } from "../services/text-to-text";
+import {
+  changeSettingsDecisionTree,
+  chat,
+  highlightSomePlanets,
+  requestNewFilterConfig,
+} from "../services/text-to-text";
 import { textToSpeech } from "../services/text-to-speech";
 import OpenAI from "openai";
 import WaveVisualizer from "./WaveVisualizer";
+import { FilterConfig } from "../hooks/useCelestialBodies";
 
 const AudioBar: FC = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -55,26 +61,64 @@ const AudioBar: FC = () => {
 
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(chunks, { type: "audio/wav" });
-        console.time();
-        console.log("Speech To Text");
-        const prompt = await transcribe(audioBlob);
-        console.log("LLM");
-        const textResp = await chat(prompt, pastMessages);
-        //consider last 6 messages as context
-        setPastMessages(
-          pastMessages
-            .slice(-4)
-            .concat(
-              { role: "user", content: prompt },
-              { role: "assistant", content: textResp }
-            )
-        );
-        console.log("Text to Speech");
-        const speechResp = await textToSpeech(textResp);
-        console.timeEnd();
-        setPrompt(speechResp);
-      };
 
+        // transcribe user text
+        const prompt = await transcribe(audioBlob);
+
+        // determine the path for user text
+        const decision = await changeSettingsDecisionTree(prompt);
+
+        // if 1 use settings change endpoint
+        if (decision === 1) {
+          const res = await requestNewFilterConfig(prompt, {} as FilterConfig);
+          //set state of config filter
+
+          // if 2 use the highlight some planets and the chat endpoint
+        } else if (decision == 2) {
+          const res = await highlightSomePlanets(prompt, []);
+          // set state of highlighted planets
+
+          setPastMessages(
+            pastMessages.slice(-4).concat(
+              { role: "user", content: prompt },
+              {
+                role: "assistant",
+                content: `highlighted planets: ${res.map((body) => body.name)}`,
+              }
+            )
+          );
+
+          const textResp = await chat(prompt, pastMessages);
+          const speechResp = await textToSpeech(textResp);
+
+          setPastMessages(
+            pastMessages
+              .slice(-4)
+              .concat(
+                { role: "user", content: prompt },
+                { role: "assistant", content: textResp }
+              )
+          );
+
+          setPrompt(speechResp);
+
+          // if 3 use the chat endpoint
+        } else {
+          const textResp = await chat(prompt, pastMessages);
+          const speechResp = await textToSpeech(textResp);
+
+          setPastMessages(
+            pastMessages
+              .slice(-4)
+              .concat(
+                { role: "user", content: prompt },
+                { role: "assistant", content: textResp }
+              )
+          );
+
+          setPrompt(speechResp);
+        }
+      };
       mediaRecorder.start();
     }
   };
