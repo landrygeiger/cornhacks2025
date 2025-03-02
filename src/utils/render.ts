@@ -1,7 +1,6 @@
 import { PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { DeviceOrientationControls } from "./DeviceOrientationControls";
 import { isMobile } from "./orientation";
-import * as THREE from "three";
 
 export const setViewSize = (
   width: number,
