@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchSolarSystemData } from "../services/AstronomyService";
-import { CelestialBody } from "../types/celestial-body";
+import { CelestialBody, filterOnView } from "../types/celestial-body";
 import { getExoplanets } from "../services/astronomical-converstion";
+import * as THREE from "three";
 
 type Params = {
   onError?: (error: string) => void;
@@ -109,6 +110,37 @@ const useCelestialBodies = ({ onError }: Params) => {
     fetchCelestialBodies();
   }, [fetchCelestialBodies]);
 
+  const [cameraQT, setCameraQT] = useState(new THREE.Quaternion());
+
+  const qtToPolar = (oldQt: THREE.Quaternion) => {
+    const qt = oldQt.clone();
+    qt.normalize();
+
+    // Compute azimuth (yaw) using quaternion components
+    const azimuth =
+      (Math.atan2(
+        2 * (qt.w * qt.y + qt.x * qt.z),
+        1 - 2 * (qt.y * qt.y + qt.z * qt.z)
+      ) *
+        180) /
+        Math.PI +
+      180;
+
+    // Compute altitude (pitch) using quaternion components
+    const altitude =
+      (Math.asin(2 * (qt.w * qt.x - qt.y * qt.z)) * 180) / Math.PI;
+
+    return { azimuth, altitude };
+  };
+
+  const cameraPolar = qtToPolar(cameraQT);
+  const onscreenCelestialBodies = filterOnView(
+    filteredCelestialBodies,
+    cameraPolar.azimuth,
+    cameraPolar.altitude,
+    45
+  );
+
   return {
     celestialBodies,
     highlightedBodies,
@@ -120,6 +152,8 @@ const useCelestialBodies = ({ onError }: Params) => {
     fetchCelestialBodies,
     filterForm,
     setFilterForm,
+    setCameraQT,
+    onscreenCelestialBodies,
   };
 };
 

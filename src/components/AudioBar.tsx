@@ -18,12 +18,14 @@ type Props = {
     React.SetStateAction<CelestialBodyFilterConfig>
   >;
   configFile: CelestialBodyFilterConfig;
+  onscreenCelestialBodies: CelestialBody[];
 };
 
 const AudioBar: FC<Props> = ({
   setHighlighted,
   setConfigFile,
   configFile,
+  onscreenCelestialBodies,
 }: Props) => {
   const [isRecording, setIsRecording] = useState(false);
   const [error, setError] = useState("");
@@ -88,7 +90,10 @@ const AudioBar: FC<Props> = ({
 
           // if 2 use the highlight some planets and the chat endpoint
         } else if (decision == 2) {
-          const res = await highlightSomePlanets(prompt, []);
+          const res = await highlightSomePlanets(
+            prompt,
+            onscreenCelestialBodies
+          );
           setHighlighted(res);
 
           setPastMessages(
