@@ -17,10 +17,3 @@ export const filterOnView = (
     return azimuthDiff <= coneAngle && polarDiff <= coneAngle;
   });
 };
-
-export const celestialBodyToText = (bodies: CelestialBody[]): string[] => {
-  const text = bodies.map((body) => {
-    return body.name;
-  });
-  return text;
-};
