@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { CelestialBody } from "../types/celestial-body";
 import { DeviceOrientationControls } from "../utils/DeviceOrientationControls";
