@@ -91,6 +91,7 @@ const AudioBar: FC<Props> = ({
           // if 2 use the highlight some planets and the chat endpoint
         } else if (decision == 2) {
           const res = await highlightSomePlanets(prompt, celestialBodies);
+          console.log(res);
           setHighlighted(res);
 
           setPastMessages(

@@ -121,7 +121,7 @@ export const highlightSomePlanets = async (
   const systemPrompt: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `You are a planet selector in a virtual galactic observatory. The user is currenting viewing the following planets and has requested more information: ${planetsInView.map(
+      content: `You are a planet selector in a virtual galactic observatory. The user is currently viewing the following planets and has requested more information: ${planetsInView.map(
         (t) => t.name,
       )} Given that list, consider the user's prompt and return a valid JSON string in the following format, selecting as few planets as is reasonable: {"highlightedCelestialBodies": [{"name": "string"}, ... ]}`,
     },
@@ -149,9 +149,14 @@ export const highlightSomePlanets = async (
       if (!result.highlightedCelestialBodies) {
         throw new Error("Something went wrong");
       }
-      return planetsInView.filter((value) => {
-        result.highlightedCelestialBodies.includes(value.name);
-      });
+      console.log(JSON.stringify(result.highlightedCelestialBodies));
+      const test = planetsInView.filter((body) =>
+        (result.highlightedCelestialBodies as any[]).some(
+          (res) => res.name === body.name,
+        ),
+      );
+      console.log(test);
+      return test;
     } catch (error) {
       console.error(`Attempt ${attempts + 1} failed:`, error);
       attempts++;
